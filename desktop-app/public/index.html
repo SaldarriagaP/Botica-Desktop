@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Desktop Botica</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Desktop Botica</h1>
+    <span id="usuarioActual"></span>
+  </header>
+
+  <nav id="tabs">
+    <button data-tab="caja" class="activo">Caja</button>
+    <button data-tab="ventas">Ventas</button>
+    <button data-tab="clientes">Clientes</button>
+    <button data-tab="catalogo">Catálogo</button>
+    <button data-tab="sync">Sincronización</button>
+  </nav>
+
+  <main>
+    <section id="tab-caja" class="tab">
+      <h2>Caja</h2>
+      <div id="cajaEstado"></div>
+      <div id="cajaAbrirForm">
+        <input id="montoApertura" type="number" placeholder="Monto de apertura" />
+        <button id="btnAbrirCaja">Abrir caja</button>
+      </div>
+      <div id="cajaCerrarForm" style="display:none">
+        <input id="montoCierre" type="number" placeholder="Monto de cierre" />
+        <button id="btnCerrarCaja">Cerrar caja</button>
+      </div>
+    </section>
+
+    <section id="tab-ventas" class="tab" style="display:none">
+      <h2>Ventas (punto de venta)</h2>
+      <div class="venta-form">
+        <select id="ventaProducto"></select>
+        <input id="ventaCantidad" type="number" value="1" min="1" />
+        <button id="btnAgregarItem">Agregar</button>
+      </div>
+      <table id="ventaTabla"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody></tbody></table>
+      <p>Total: S/ <span id="ventaTotal">0.00</span></p>
+      <button id="btnRegistrarVenta">Registrar venta</button>
+      <p id="ventaMsg"></p>
+    </section>
+
+    <section id="tab-clientes" class="tab" style="display:none">
+      <h2>Clientes</h2>
+      <input id="clienteBusqueda" placeholder="Buscar cliente..." />
+      <table id="clienteTabla"><thead><tr><th>Nombre</th><th>Documento</th><th>Teléfono</th></tr></thead><tbody></tbody></table>
+      <h3>Nuevo cliente</h3>
+      <input id="nuevoClienteNombre" placeholder="Nombre" />
+      <input id="nuevoClienteDoc" placeholder="Documento" />
+      <input id="nuevoClienteTel" placeholder="Teléfono" />
+      <button id="btnNuevoCliente">Guardar cliente</button>
+    </section>
+
+    <section id="tab-catalogo" class="tab" style="display:none">
+      <h2>Catálogo / stock</h2>
+      <input id="catalogoBusqueda" placeholder="Buscar producto..." />
+      <table id="catalogoTabla"><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th></tr></thead><tbody></tbody></table>
+    </section>
+
+    <section id="tab-sync" class="tab" style="display:none">
+      <h2>Sincronización</h2>
+      <p>Última sincronización: <span id="lastSync">-</span></p>
+      <button id="btnSincronizar">Sincronizar ahora</button>
+      <p id="syncMsg"></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
