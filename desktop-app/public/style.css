@@ -24,3 +24,14 @@ table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
 input, select { padding: 6px; margin: 4px 4px 4px 0; }
 button { padding: 6px 12px; cursor: pointer; }
+button.secundario { background: #eee; }
+button.peligro { background: #c62828; color: white; border: none; }
+
+.badge { padding: 2px 8px; border-radius: 10px; font-size: 0.8em; }
+.badge-activo { background: #c8e6c9; color: #1b5e20; }
+.badge-inactivo { background: #ffcdd2; color: #b71c1c; }
+
+tr.stock-bajo td { background: #fff3cd; }
+
+.error-msg { color: #c62828; }
+.ok-msg { color: #2e7d32; }

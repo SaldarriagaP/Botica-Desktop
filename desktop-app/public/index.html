@@ -16,6 +16,7 @@
     <button data-tab="ventas">Ventas</button>
     <button data-tab="clientes">Clientes</button>
     <button data-tab="catalogo">Catálogo</button>
+    <button data-tab="usuarios" class="solo-admin">Usuarios</button>
     <button data-tab="sync">Sincronización</button>
   </nav>
 
@@ -49,18 +50,74 @@
     <section id="tab-clientes" class="tab" style="display:none">
       <h2>Clientes</h2>
       <input id="clienteBusqueda" placeholder="Buscar cliente..." />
-      <table id="clienteTabla"><thead><tr><th>Nombre</th><th>Documento</th><th>Teléfono</th></tr></thead><tbody></tbody></table>
+      <table id="clienteTabla">
+        <thead><tr><th>Nombre</th><th>Doc.</th><th>Teléfono</th><th>Dirección</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
       <h3>Nuevo cliente</h3>
-      <input id="nuevoClienteNombre" placeholder="Nombre" />
-      <input id="nuevoClienteDoc" placeholder="Documento" />
-      <input id="nuevoClienteTel" placeholder="Teléfono" />
-      <button id="btnNuevoCliente">Guardar cliente</button>
+      <form id="clienteForm">
+        <input type="hidden" id="clienteId" />
+        <input id="clienteNombre" placeholder="Nombre" required />
+        <select id="clienteTipoDoc">
+          <option value="DNI">DNI</option>
+          <option value="RUC">RUC</option>
+          <option value="CE">Carné de extranjería</option>
+          <option value="SIN_DOCUMENTO">Sin documento</option>
+        </select>
+        <input id="clienteDocumento" placeholder="Número de documento" />
+        <input id="clienteTelefono" placeholder="Teléfono" />
+        <input id="clienteDireccion" placeholder="Dirección" />
+        <button id="btnGuardarCliente" type="submit">Guardar cliente</button>
+        <button id="btnCancelarClienteEdit" type="button" style="display:none">Cancelar edición</button>
+      </form>
+      <p id="clienteMsg"></p>
     </section>
 
     <section id="tab-catalogo" class="tab" style="display:none">
       <h2>Catálogo / stock</h2>
-      <input id="catalogoBusqueda" placeholder="Buscar producto..." />
-      <table id="catalogoTabla"><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th></tr></thead><tbody></tbody></table>
+      <input id="catalogoBusqueda" placeholder="Buscar producto, categoría o marca..." />
+      <table id="catalogoTabla">
+        <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <h3 class="solo-admin">Nuevo producto</h3>
+      <form id="productoForm" class="solo-admin">
+        <input type="hidden" id="productoId" />
+        <input id="productoNombre" placeholder="Nombre" required />
+        <input id="productoCategoria" placeholder="Categoría" />
+        <input id="productoMarca" placeholder="Marca / laboratorio" />
+        <input id="productoPrecio" type="number" step="0.01" min="0" placeholder="Precio" required />
+        <input id="productoStock" type="number" step="0.01" min="0" placeholder="Stock" required />
+        <input id="productoStockMinimo" type="number" step="0.01" min="0" placeholder="Stock mínimo" />
+        <input id="productoCodigoBarras" placeholder="Código de barras" />
+        <button id="btnGuardarProducto" type="submit">Guardar producto</button>
+        <button id="btnCancelarProductoEdit" type="button" style="display:none">Cancelar edición</button>
+      </form>
+      <p id="productoMsg"></p>
+    </section>
+
+    <section id="tab-usuarios" class="tab solo-admin" style="display:none">
+      <h2>Usuarios</h2>
+      <table id="usuarioTabla">
+        <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Nuevo usuario</h3>
+      <form id="usuarioForm">
+        <input id="usuarioUsername" placeholder="Usuario" required />
+        <input id="usuarioPassword" type="password" placeholder="Contraseña (mín. 6)" required />
+        <input id="usuarioNombre" placeholder="Nombre completo" required />
+        <input id="usuarioEmail" type="email" placeholder="Email" />
+        <select id="usuarioRol">
+          <option value="vendedor">Vendedor</option>
+          <option value="admin">Administrador</option>
+        </select>
+        <button id="btnGuardarUsuario" type="submit">Crear usuario</button>
+      </form>
+      <p id="usuarioMsg"></p>
     </section>
 
     <section id="tab-sync" class="tab" style="display:none">

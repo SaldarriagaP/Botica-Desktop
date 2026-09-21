@@ -63,6 +63,35 @@ CREATE TABLE IF NOT EXISTS sync_state (
 );
 `);
 
+// Migraciones simples: agrega columnas nuevas a bases de datos que ya
+// existían con el esquema viejo, sin perder los datos guardados.
+function ensureColumn(table, column, definition) {
+  const columnas = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!columnas.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+ensureColumn('users', 'email', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('users', 'estado', 'INTEGER NOT NULL DEFAULT 1');
+
+ensureColumn('customers', 'tipo_documento', "TEXT NOT NULL DEFAULT 'DNI'");
+ensureColumn('customers', 'direccion', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('customers', 'estado', 'INTEGER NOT NULL DEFAULT 1');
+
+ensureColumn('products', 'categoria', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('products', 'marca', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('products', 'estado', 'INTEGER NOT NULL DEFAULT 1');
+ensureColumn('products', 'stock_minimo', 'REAL NOT NULL DEFAULT 0');
+
+db.exec(`
+CREATE UNIQUE INDEX IF NOT EXISTS idx_customers_documento
+  ON customers(documento) WHERE documento IS NOT NULL AND documento != '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_products_codigo_barras
+  ON products(codigo_barras) WHERE codigo_barras IS NOT NULL AND codigo_barras != '';
+`);
+
 function getState(key, def = null) {
   const row = db.prepare('SELECT value FROM sync_state WHERE key = ?').get(key);
   return row ? row.value : def;
