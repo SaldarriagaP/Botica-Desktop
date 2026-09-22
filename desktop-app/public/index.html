@@ -2,131 +2,187 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Desktop Botica</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Desktop Botica</h1>
-    <span id="usuarioActual"></span>
-  </header>
-
-  <nav id="tabs">
-    <button data-tab="caja" class="activo">Caja</button>
-    <button data-tab="ventas">Ventas</button>
-    <button data-tab="clientes">Clientes</button>
-    <button data-tab="catalogo">Catálogo</button>
-    <button data-tab="usuarios" class="solo-admin">Usuarios</button>
-    <button data-tab="sync">Sincronización</button>
-  </nav>
-
-  <main>
-    <section id="tab-caja" class="tab">
-      <h2>Caja</h2>
-      <div id="cajaEstado"></div>
-      <div id="cajaAbrirForm">
-        <input id="montoApertura" type="number" placeholder="Monto de apertura" />
-        <button id="btnAbrirCaja">Abrir caja</button>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="login-brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+        </span>
+        <span class="sidebar-brand-text">Desktop Botica<small>Sucursal (offline)</small></span>
       </div>
-      <div id="cajaCerrarForm" style="display:none">
-        <input id="montoCierre" type="number" placeholder="Monto de cierre" />
-        <button id="btnCerrarCaja">Cerrar caja</button>
-      </div>
-    </section>
 
-    <section id="tab-ventas" class="tab" style="display:none">
-      <h2>Ventas (punto de venta)</h2>
-      <div class="venta-form">
-        <select id="ventaProducto"></select>
-        <input id="ventaCantidad" type="number" value="1" min="1" />
-        <button id="btnAgregarItem">Agregar</button>
-      </div>
-      <table id="ventaTabla"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody></tbody></table>
-      <p>Total: S/ <span id="ventaTotal">0.00</span></p>
-      <button id="btnRegistrarVenta">Registrar venta</button>
-      <p id="ventaMsg"></p>
-    </section>
+      <nav id="tabs">
+        <button data-tab="caja" class="activo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><circle cx="12" cy="15" r="1.4"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+          Caja
+        </button>
+        <button data-tab="ventas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2.5 3h2.4l2.4 12.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21.5 8H6.2"/></svg>
+          Ventas
+        </button>
+        <button data-tab="clientes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.3" cy="9" r="2.5"/><path d="M15.6 14.3c2.6.4 4.7 2.6 4.7 5.7"/></svg>
+          Clientes
+        </button>
+        <button data-tab="catalogo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 11h18"/><path d="M9 7V4.8A1.8 1.8 0 0 1 10.8 3h2.4A1.8 1.8 0 0 1 15 4.8V7"/></svg>
+          Catálogo
+        </button>
+        <button data-tab="usuarios" class="solo-admin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.8-3 8.3-7 9-4-.7-7-4.2-7-9V6l7-3z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
+          Usuarios
+        </button>
+        <button data-tab="sync">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.6-4.4M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.4M20 19v-4h-4"/></svg>
+          Sincronización
+        </button>
+      </nav>
 
-    <section id="tab-clientes" class="tab" style="display:none">
-      <h2>Clientes</h2>
-      <input id="clienteBusqueda" placeholder="Buscar cliente..." />
-      <table id="clienteTabla">
-        <thead><tr><th>Nombre</th><th>Doc.</th><th>Teléfono</th><th>Dirección</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div class="sidebar-footer">Desktop Botica · Prototipo v0.2</div>
+    </aside>
 
-      <h3>Nuevo cliente</h3>
-      <form id="clienteForm">
-        <input type="hidden" id="clienteId" />
-        <input id="clienteNombre" placeholder="Nombre" required />
-        <select id="clienteTipoDoc">
-          <option value="DNI">DNI</option>
-          <option value="RUC">RUC</option>
-          <option value="CE">Carné de extranjería</option>
-          <option value="SIN_DOCUMENTO">Sin documento</option>
-        </select>
-        <input id="clienteDocumento" placeholder="Número de documento" />
-        <input id="clienteTelefono" placeholder="Teléfono" />
-        <input id="clienteDireccion" placeholder="Dirección" />
-        <button id="btnGuardarCliente" type="submit">Guardar cliente</button>
-        <button id="btnCancelarClienteEdit" type="button" style="display:none">Cancelar edición</button>
-      </form>
-      <p id="clienteMsg"></p>
-    </section>
+    <div class="content-area">
+      <header class="topbar">
+        <h1 id="pageTitle">Caja</h1>
+        <span id="usuarioActual"></span>
+      </header>
 
-    <section id="tab-catalogo" class="tab" style="display:none">
-      <h2>Catálogo / stock</h2>
-      <input id="catalogoBusqueda" placeholder="Buscar producto, categoría o marca..." />
-      <table id="catalogoTabla">
-        <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <main>
+        <section id="tab-caja" class="tab">
+          <div class="card">
+            <div class="card-head"><h2>Apertura y cierre de caja</h2></div>
+            <div id="cajaEstado"></div>
+            <div id="cajaAbrirForm" class="inline-form">
+              <input id="montoApertura" type="number" placeholder="Monto de apertura" />
+              <button id="btnAbrirCaja">Abrir caja</button>
+            </div>
+            <div id="cajaCerrarForm" class="inline-form" style="display:none">
+              <input id="montoCierre" type="number" placeholder="Monto de cierre" />
+              <button id="btnCerrarCaja">Cerrar caja</button>
+            </div>
+          </div>
+        </section>
 
-      <h3 class="solo-admin">Nuevo producto</h3>
-      <form id="productoForm" class="solo-admin">
-        <input type="hidden" id="productoId" />
-        <input id="productoNombre" placeholder="Nombre" required />
-        <input id="productoCategoria" placeholder="Categoría" />
-        <input id="productoMarca" placeholder="Marca / laboratorio" />
-        <input id="productoPrecio" type="number" step="0.01" min="0" placeholder="Precio" required />
-        <input id="productoStock" type="number" step="0.01" min="0" placeholder="Stock" required />
-        <input id="productoStockMinimo" type="number" step="0.01" min="0" placeholder="Stock mínimo" />
-        <input id="productoCodigoBarras" placeholder="Código de barras" />
-        <button id="btnGuardarProducto" type="submit">Guardar producto</button>
-        <button id="btnCancelarProductoEdit" type="button" style="display:none">Cancelar edición</button>
-      </form>
-      <p id="productoMsg"></p>
-    </section>
+        <section id="tab-ventas" class="tab" style="display:none">
+          <div class="card">
+            <div class="card-head"><h2>Punto de venta</h2></div>
+            <div class="venta-form inline-form">
+              <select id="ventaProducto"></select>
+              <input id="ventaCantidad" type="number" value="1" min="1" />
+              <button id="btnAgregarItem">Agregar</button>
+            </div>
+            <table id="ventaTabla"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody></tbody></table>
+            <p>Total: S/ <strong id="ventaTotal">0.00</strong></p>
+            <button id="btnRegistrarVenta">Registrar venta</button>
+            <p id="ventaMsg"></p>
+          </div>
+        </section>
 
-    <section id="tab-usuarios" class="tab solo-admin" style="display:none">
-      <h2>Usuarios</h2>
-      <table id="usuarioTabla">
-        <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody></tbody>
-      </table>
+        <section id="tab-clientes" class="tab" style="display:none">
+          <div class="card">
+            <div class="card-head">
+              <h2>Clientes</h2>
+              <input id="clienteBusqueda" placeholder="Buscar cliente..." />
+            </div>
+            <table id="clienteTabla">
+              <thead><tr><th>Nombre</th><th>Doc.</th><th>Teléfono</th><th>Dirección</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
 
-      <h3>Nuevo usuario</h3>
-      <form id="usuarioForm">
-        <input id="usuarioUsername" placeholder="Usuario" required />
-        <input id="usuarioPassword" type="password" placeholder="Contraseña (mín. 6)" required />
-        <input id="usuarioNombre" placeholder="Nombre completo" required />
-        <input id="usuarioEmail" type="email" placeholder="Email" />
-        <select id="usuarioRol">
-          <option value="vendedor">Vendedor</option>
-          <option value="admin">Administrador</option>
-        </select>
-        <button id="btnGuardarUsuario" type="submit">Crear usuario</button>
-      </form>
-      <p id="usuarioMsg"></p>
-    </section>
+          <div class="card">
+            <h3>Nuevo cliente</h3>
+            <form id="clienteForm" class="inline-form">
+              <input type="hidden" id="clienteId" />
+              <input id="clienteNombre" placeholder="Nombre" required />
+              <select id="clienteTipoDoc">
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="CE">Carné de extranjería</option>
+                <option value="SIN_DOCUMENTO">Sin documento</option>
+              </select>
+              <input id="clienteDocumento" placeholder="Número de documento" />
+              <input id="clienteTelefono" placeholder="Teléfono" />
+              <input id="clienteDireccion" placeholder="Dirección" />
+              <button id="btnGuardarCliente" type="submit">Guardar cliente</button>
+              <button id="btnCancelarClienteEdit" class="secundario" type="button" style="display:none">Cancelar edición</button>
+            </form>
+            <p id="clienteMsg"></p>
+          </div>
+        </section>
 
-    <section id="tab-sync" class="tab" style="display:none">
-      <h2>Sincronización</h2>
-      <p>Última sincronización: <span id="lastSync">-</span></p>
-      <button id="btnSincronizar">Sincronizar ahora</button>
-      <p id="syncMsg"></p>
-    </section>
-  </main>
+        <section id="tab-catalogo" class="tab" style="display:none">
+          <div class="card">
+            <div class="card-head">
+              <h2>Catálogo / stock</h2>
+              <input id="catalogoBusqueda" placeholder="Buscar producto, categoría o marca..." />
+            </div>
+            <table id="catalogoTabla">
+              <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="card solo-admin">
+            <h3>Nuevo producto</h3>
+            <form id="productoForm" class="inline-form">
+              <input type="hidden" id="productoId" />
+              <input id="productoNombre" placeholder="Nombre" required />
+              <input id="productoCategoria" placeholder="Categoría" />
+              <input id="productoMarca" placeholder="Marca / laboratorio" />
+              <input id="productoPrecio" type="number" step="0.01" min="0" placeholder="Precio" required />
+              <input id="productoStock" type="number" step="0.01" min="0" placeholder="Stock" required />
+              <input id="productoStockMinimo" type="number" step="0.01" min="0" placeholder="Stock mínimo" />
+              <input id="productoCodigoBarras" placeholder="Código de barras" />
+              <button id="btnGuardarProducto" type="submit">Guardar producto</button>
+              <button id="btnCancelarProductoEdit" class="secundario" type="button" style="display:none">Cancelar edición</button>
+            </form>
+            <p id="productoMsg"></p>
+          </div>
+        </section>
+
+        <section id="tab-usuarios" class="tab solo-admin" style="display:none">
+          <div class="card">
+            <div class="card-head"><h2>Usuarios</h2></div>
+            <table id="usuarioTabla">
+              <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3>Nuevo usuario</h3>
+            <form id="usuarioForm" class="inline-form">
+              <input id="usuarioUsername" placeholder="Usuario" required />
+              <input id="usuarioPassword" type="password" placeholder="Contraseña (mín. 6)" required />
+              <input id="usuarioNombre" placeholder="Nombre completo" required />
+              <input id="usuarioEmail" type="email" placeholder="Email" />
+              <select id="usuarioRol">
+                <option value="vendedor">Vendedor</option>
+                <option value="admin">Administrador</option>
+              </select>
+              <button id="btnGuardarUsuario" type="submit">Crear usuario</button>
+            </form>
+            <p id="usuarioMsg"></p>
+          </div>
+        </section>
+
+        <section id="tab-sync" class="tab" style="display:none">
+          <div class="card">
+            <div class="card-head"><h2>Sincronización</h2></div>
+            <p>Última sincronización: <strong id="lastSync">-</strong></p>
+            <button id="btnSincronizar">Sincronizar ahora</button>
+            <p id="syncMsg"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

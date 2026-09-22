@@ -34,6 +34,7 @@ document.querySelectorAll('#tabs button').forEach((btn) => {
     document.querySelectorAll('.tab').forEach((t) => (t.style.display = 'none'));
     btn.classList.add('activo');
     document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+    document.getElementById('pageTitle').textContent = btn.textContent.trim();
   });
 });
 

@@ -2,18 +2,87 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>Desktop Botica - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Desktop Botica - Iniciar sesión</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="login-box">
-    <h1>Desktop Botica</h1>
-    <p class="subtitulo">Prototipo - sucursal (offline)</p>
-    <input id="username" placeholder="Usuario" autofocus />
-    <input id="password" type="password" placeholder="Contraseña" />
-    <button id="btnLogin">Ingresar</button>
-    <p id="error" class="error"></p>
-  </div>
+  <main class="login-refresh">
+    <div class="login-refresh-card">
+      <section class="login-brand" aria-label="Desktop Botica">
+        <div class="login-brand-top">
+          <span class="login-brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+          </span>
+          <span>Desktop Botica</span>
+        </div>
+
+        <div class="login-brand-message">
+          <span class="login-brand-kicker">Gestión de sucursal</span>
+          <h1>Todo lo que necesitas, en un solo lugar.</h1>
+          <p>Caja, ventas, clientes y catálogo de tu botica, funcionando en local y sincronizando cuando haya conexión.</p>
+        </div>
+
+        <div class="login-brand-status">
+          <span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3v6c0 4.8-3 8.3-7 9-4-.7-7-4.2-7-9V6l7-3z"/><path d="M9 12.2l2 2 4-4.2"/>
+            </svg>
+          </span>
+          <div>
+            <strong>Acceso local y seguro</strong>
+            <small>Tus datos se quedan en esta sucursal</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-form-panel">
+        <form class="login-form" id="loginForm" autocomplete="on">
+          <div class="login-header">
+            <span>Bienvenido de nuevo</span>
+            <h2>Inicia sesión</h2>
+            <p>Ingresa tus datos para acceder al sistema.</p>
+          </div>
+
+          <p id="error" class="login-alert"></p>
+
+          <div class="login-field">
+            <label for="username">Usuario</label>
+            <div class="login-input">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/>
+              </svg>
+              <input id="username" placeholder="Escribe tu usuario" autocomplete="username" autofocus required />
+            </div>
+          </div>
+
+          <div class="login-field">
+            <label for="password">Contraseña</label>
+            <div class="login-input">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              </svg>
+              <input id="password" type="password" placeholder="Escribe tu contraseña" autocomplete="current-password" required />
+              <button type="button" id="toggle-password" class="login-password-toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="login-submit" type="submit" id="btnLogin">
+            Ingresar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </button>
+
+          <p class="login-help">
+            Acceso exclusivo para personal autorizado de la sucursal
+          </p>
+        </form>
+      </section>
+    </div>
+  </main>
   <script src="login.js"></script>
 </body>
 </html>
