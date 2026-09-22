@@ -1,6 +1,3 @@
-// Datos de prueba para que la app tenga algo con que trabajar.
-// Usuarios: ADMIN01 / admin123  |  VEND01 / vendedor123
-
 const bcrypt = require('bcryptjs');
 
 const users = [
@@ -22,25 +19,36 @@ const products = [
 ];
 
 function seed(db) {
-  const yaHaySemilla = db.prepare('SELECT COUNT(*) AS n FROM users').get().n > 0;
-  if (yaHaySemilla) return false;
+  db.get('SELECT COUNT(*) AS n FROM users', [], (err, row) => {
+    if (err || (row && row.n > 0)) {
+      return; // Ya existen usuarios cargados
+    }
 
-  const tx = db.transaction(() => {
-    for (const u of users) {
-      db.prepare('INSERT INTO users (id, username, password_hash, nombre, rol) VALUES (?,?,?,?,?)')
-        .run(u.id, u.username, bcrypt.hashSync(u.password, 10), u.nombre, u.rol);
-    }
-    for (const c of customers) {
-      db.prepare('INSERT INTO customers (nombre, documento, telefono) VALUES (?,?,?)')
-        .run(c.nombre, c.documento, c.telefono);
-    }
-    for (const p of products) {
-      db.prepare('INSERT INTO products (id, nombre, precio, stock, codigo_barras) VALUES (?,?,?,?,?)')
-        .run(p.id, p.nombre, p.precio, p.stock, p.codigo_barras);
-    }
+    db.serialize(() => {
+      // Inserción de Usuarios
+      const stmtUser = db.prepare('INSERT INTO users (id, username, password_hash, nombre, rol) VALUES (?,?,?,?,?)');
+      for (const u of users) {
+        stmtUser.run(u.id, u.username, bcrypt.hashSync(u.password, 10), u.nombre, u.rol);
+      }
+      stmtUser.finalize();
+
+      // Inserción de Clientes
+      const stmtCust = db.prepare('INSERT INTO customers (nombre, documento, telefono) VALUES (?,?,?)');
+      for (const c of customers) {
+        stmtCust.run(c.nombre, c.documento, c.telefono);
+      }
+      stmtCust.finalize();
+
+      // Inserción de Productos
+      const stmtProd = db.prepare('INSERT INTO products (id, nombre, precio, stock, codigo_barras) VALUES (?,?,?,?,?)');
+      for (const p of products) {
+        stmtProd.run(p.id, p.nombre, p.precio, p.stock, p.codigo_barras);
+      }
+      stmtProd.finalize();
+
+      console.log('>>> Base de datos poblada exitosamente con datos de prueba.');
+    });
   });
-  tx();
-  return true;
 }
 
 module.exports = { seed };
