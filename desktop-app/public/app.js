@@ -7,6 +7,11 @@ if (!esAdmin) {
   document.querySelectorAll('.solo-admin').forEach((el) => (el.style.display = 'none'));
 }
 
+document.getElementById('btnLogout').addEventListener('click', () => {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+});
+
 function conActor(body = {}) {
   return { ...body, actorUsername: usuario.username };
 }
@@ -56,14 +61,22 @@ async function cargarCaja() {
 }
 
 document.getElementById('btnAbrirCaja').addEventListener('click', async () => {
+  const msg = document.getElementById('cajaMsg');
   const monto = Number(document.getElementById('montoApertura').value || 0);
-  await postJson('/api/caja/abrir', { usuario: usuario.nombre, monto });
+  const res = await postJson('/api/caja/abrir', { usuario: usuario.nombre, monto });
+  msg.className = res.ok ? 'ok-msg' : 'error-msg';
+  msg.textContent = res.ok ? 'Caja abierta' : res.error;
+  if (res.ok) document.getElementById('montoApertura').value = '';
   cargarCaja();
 });
 
 document.getElementById('btnCerrarCaja').addEventListener('click', async () => {
+  const msg = document.getElementById('cajaMsg');
   const monto = Number(document.getElementById('montoCierre').value || 0);
-  await postJson('/api/caja/cerrar', { monto });
+  const res = await postJson('/api/caja/cerrar', { monto });
+  msg.className = res.ok ? 'ok-msg' : 'error-msg';
+  msg.textContent = res.ok ? 'Caja cerrada' : res.error;
+  if (res.ok) document.getElementById('montoCierre').value = '';
   cargarCaja();
 });
 

@@ -13,6 +13,6 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "electron": "^32.0.0"
+    "electron": "^44.4.3"
   }
 }

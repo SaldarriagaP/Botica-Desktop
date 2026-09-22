@@ -12,4 +12,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', routes);
 
 const PORT = process.env.PORT || 4500;
-app.listen(PORT, () => console.log(`Desktop Botica (simple) escuchando en http://localhost:${PORT}`));
+const server = app.listen(PORT, () => console.log(`Desktop Botica (simple) escuchando en http://localhost:${PORT}`));
+
+module.exports = { app, server, PORT };

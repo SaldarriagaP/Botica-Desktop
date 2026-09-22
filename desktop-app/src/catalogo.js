@@ -83,8 +83,4 @@ function cambiarEstado(id, estado) {
   return { ok: true };
 }
 
-function descontarStock(productId, cantidad) {
-  db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?').run(cantidad, productId);
-}
-
-module.exports = { listar, crear, actualizar, cambiarEstado, descontarStock };
+module.exports = { listar, crear, actualizar, cambiarEstado };
