@@ -1,11 +1,16 @@
 {
   "name": "botica-desktop-app",
-  "version": "0.1.0",
-  "description": "Prototipo inicial de app de escritorio para una sucursal de Botica Solidaria.",
+  "version": "0.3.0",
+  "description": "App de escritorio offline-first para una sucursal de Boticas Solidaria (Electron + Node + SQLite).",
   "main": "electron-main.js",
   "scripts": {
     "start": "electron .",
-    "start:web": "node server.js"
+    "start:web": "node server.js",
+    "importar": "node scripts/importar-web.js",
+    "test": "node --test --test-reporter=spec \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

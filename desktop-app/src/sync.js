@@ -29,8 +29,12 @@ async function sincronizar() {
   try {
     const productos = await fetchJson(`${CENTRAL_URL}/api/productos`);
     for (const p of productos) {
-      db.prepare('UPDATE products SET precio = ? WHERE id = ?').run(p.precio, p.id);
-      resultado.productosActualizados++;
+      // Iteracion 4 reemplaza esto por el pull real. Por ahora el mock usa
+      // los ids de los productos de demostracion.
+      const info = db.prepare(
+        'UPDATE products SET precio_unidad = ? WHERE central_id = ? OR (central_id IS NULL AND id = ?)'
+      ).run(p.precio, p.id, p.id);
+      resultado.productosActualizados += info.changes;
     }
 
     const pendientes = db.prepare('SELECT * FROM sales WHERE sincronizado = 0').all();

@@ -1,17 +1,12 @@
-const path = require('path');
-const express = require('express');
-const { db } = require('./src/db');
-const { seed } = require('./src/seedData');
-const routes = require('./src/routes');
+const config = require('./src/config');
+const { createApp } = require('./src/app');
 
-seed(db);
+const app = createApp();
+const { host, port: PORT } = config.server;
 
-const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api', routes);
+// Solo escucha en 127.0.0.1: la API local no queda expuesta a la red.
+const server = app.listen(PORT, host, () =>
+  console.log(`Desktop Botica escuchando en http://${host}:${PORT} (sucursal ${config.localId})`)
+);
 
-const PORT = process.env.PORT || 4500;
-const server = app.listen(PORT, () => console.log(`Desktop Botica (simple) escuchando en http://localhost:${PORT}`));
-
-module.exports = { app, server, PORT };
+module.exports = { app, server, PORT, HOST: host };

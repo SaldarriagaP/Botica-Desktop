@@ -1,58 +1,71 @@
-// Modulo 3: Ventas (punto de venta)
-// TODO: metodos de pago mixtos, IGV, boleta/factura, impresion de ticket
+// Modulo 3: Ventas (punto de venta basico)
+// Se vende por presentacion completa (modo "unidad", ej. la caja) o por
+// unidad suelta (modo "fraccion") si el producto se fracciona.
+// TODO (Iteracion 3): IGV, medios de pago, boleta/factura, cliente en la venta.
 
 const { db } = require('./db');
 const caja = require('./caja');
+const catalogo = require('./catalogo');
 
-function registrar({ items, clienteId, usuario }) {
+function registrar({ items, clienteId, usuario, userId }) {
   if (!caja.estado()) return { ok: false, error: 'Abre la caja antes de vender' };
-  if (!items || !items.length) return { ok: false, error: 'La venta no tiene productos' };
+  if (!Array.isArray(items) || !items.length) return { ok: false, error: 'La venta no tiene productos' };
   if (!usuario) return { ok: false, error: 'Falta el usuario que registra la venta' };
 
-  // No confiamos en el precio ni el stock que manda el navegador: se
-  // vuelven a leer de la BD para evitar que un cliente manipulado venda
-  // a otro precio o descuente stock que ya no existe.
-  const itemsValidados = [];
+  // Precio y stock se leen de la BD, nunca de lo que mande la ventana.
+  const lineas = [];
   for (const it of items) {
-    const cantidad = Number(it.cantidad);
-    if (!it.productId || !Number.isFinite(cantidad) || cantidad <= 0) {
-      return { ok: false, error: 'Hay un producto con cantidad inválida en la venta' };
+    const cantidad = Number(it && it.cantidad);
+    const modo = it && it.modo === 'fraccion' ? 'fraccion' : 'unidad';
+    if (!it || !it.productId || !Number.isInteger(cantidad) || cantidad <= 0) {
+      return { ok: false, error: 'Hay un producto con cantidad inválida en la venta (debe ser un entero mayor que 0)' };
     }
-    const producto = db.prepare('SELECT * FROM products WHERE id = ?').get(it.productId);
-    if (!producto || !producto.estado) {
-      return { ok: false, error: `El producto ya no está disponible (id ${it.productId})` };
-    }
-    if (producto.stock < cantidad) {
-      return { ok: false, error: `Stock insuficiente de "${producto.nombre}" (disponible: ${producto.stock})` };
-    }
-    itemsValidados.push({
-      productId: producto.id,
-      nombre: producto.nombre,
-      precio: producto.precio,
+    const p = catalogo.obtener(it.productId);
+    if (!p || !p.status) return { ok: false, error: `El producto ya no está disponible (id ${it.productId})` };
+    if (modo === 'fraccion' && !p.se_fracciona) return { ok: false, error: `"${p.name}" no se vende por unidad suelta` };
+
+    const precio = modo === 'fraccion' ? p.precio_fraccion : p.precio_unidad;
+    if (!(precio > 0)) return { ok: false, error: `"${p.name}" no tiene precio de venta asignado` };
+
+    lineas.push({
+      productId: p.id,
+      nombre: p.name,
+      modo,
       cantidad,
+      precio,
+      fracciones: modo === 'fraccion' ? cantidad : cantidad * p.fraccion,
+      fraccion: p.fraccion,
     });
   }
 
-  const total = itemsValidados.reduce((acc, it) => acc + it.precio * it.cantidad, 0);
+  // Si el mismo producto aparece en varias lineas, se valida el total.
+  const porProducto = new Map();
+  for (const l of lineas) porProducto.set(l.productId, (porProducto.get(l.productId) || 0) + l.fracciones);
 
-  const registrarTx = db.transaction(() => {
-    const info = db.prepare(
-      'INSERT INTO sales (fecha, cliente_id, usuario, items_json, total) VALUES (?,?,?,?,?)'
-    ).run(new Date().toISOString(), clienteId || null, usuario, JSON.stringify(itemsValidados), total);
+  const total = Math.round(lineas.reduce((acc, l) => acc + l.precio * l.cantidad, 0) * 100) / 100;
 
-    for (const it of itemsValidados) {
-      db.prepare('UPDATE products SET stock = stock - ? WHERE id = ?').run(it.cantidad, it.productId);
+  return db.transaction(() => {
+    for (const [productId, fracciones] of porProducto) {
+      const p = catalogo.obtener(productId);
+      if (p.stock < fracciones) {
+        return { ok: false, error: `Stock insuficiente de "${p.name}" (disponible: ${p.stock_detalle.texto})` };
+      }
     }
 
-    return info.lastInsertRowid;
-  });
+    const info = db.prepare(
+      'INSERT INTO sales (fecha, cliente_id, usuario, items_json, total) VALUES (?,?,?,?,?)'
+    ).run(new Date().toISOString(), clienteId || null, usuario, JSON.stringify(lineas), total);
+    const ventaId = Number(info.lastInsertRowid);
 
-  const id = registrarTx();
-  return { ok: true, id, total };
+    for (const l of lineas) {
+      catalogo.moverStock(l.productId, -l.fracciones, 'venta', { referencia: `venta:${ventaId}`, userId: userId || null });
+    }
+    return { ok: true, id: ventaId, total };
+  })();
 }
 
 function listar() {
-  return db.prepare('SELECT * FROM sales ORDER BY id DESC').all();
+  return db.prepare('SELECT * FROM sales ORDER BY id DESC LIMIT 200').all();
 }
 
 module.exports = { registrar, listar };

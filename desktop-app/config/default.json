@@ -1,0 +1,16 @@
+{
+  "localId": 19,
+  "server": {
+    "host": "127.0.0.1",
+    "port": 4500
+  },
+  "centralUrl": "http://localhost:4000",
+  "session": {
+    "idleMinutes": 480
+  },
+  "auth": {
+    "maxAttempts": 5,
+    "lockoutSeconds": 60,
+    "bcryptRounds": 10
+  }
+}

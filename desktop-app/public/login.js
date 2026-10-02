@@ -1,3 +1,17 @@
+const errorEl = document.getElementById('error');
+const btn = document.getElementById('btnLogin');
+
+function mostrarAviso(texto, tipo = 'error') {
+  errorEl.textContent = texto;
+  errorEl.classList.toggle('info', tipo === 'info');
+  errorEl.classList.add('visible');
+}
+
+function ocultarAviso() {
+  errorEl.textContent = '';
+  errorEl.classList.remove('visible', 'info');
+}
+
 document.getElementById('loginForm').addEventListener('submit', (e) => {
   e.preventDefault();
   login();
@@ -19,36 +33,40 @@ togglePassword.addEventListener('click', () => {
 
 async function login() {
   const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-  const errorEl = document.getElementById('error');
-  errorEl.textContent = '';
-  errorEl.classList.remove('visible');
-
-  const btn = document.getElementById('btnLogin');
+  const password = passwordInput.value;
+  ocultarAviso();
   btn.disabled = true;
 
-  let data;
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-    data = await res.json();
-  } catch (err) {
-    btn.disabled = false;
-    errorEl.textContent = 'No se pudo conectar con el servidor local';
-    errorEl.classList.add('visible');
-    return;
-  }
+  const data = await api('/api/auth/login', { method: 'POST', body: { username, password } });
 
   if (!data.ok) {
     btn.disabled = false;
-    errorEl.textContent = data.error;
-    errorEl.classList.add('visible');
+    mostrarAviso(data.error || 'No se pudo iniciar sesión');
+    passwordInput.value = '';
+    passwordInput.focus();
     return;
   }
 
-  localStorage.setItem('usuario', JSON.stringify(data.user));
-  window.location.href = 'index.html';
+  Sesion.guardar(data.token, data.user);
+  window.location.replace(data.user.resetPass ? 'cambiar-password.html' : 'index.html');
 }
+
+async function iniciar() {
+  try { localStorage.removeItem('usuario'); } catch { /* resto de la version anterior */ }
+  const motivo = new URLSearchParams(window.location.search).get('motivo');
+  if (motivo === 'expirada') mostrarAviso('Tu sesión expiró. Vuelve a iniciar sesión.', 'info');
+  if (motivo === 'logout') mostrarAviso('Cerraste sesión correctamente.', 'info');
+
+  // Si ya hay una sesion valida en esta ventana, entrar directo.
+  if (Sesion.token()) {
+    const me = await api('/api/auth/me');
+    if (me.ok) return window.location.replace('index.html');
+  }
+
+  const terminal = await api('/api/terminal');
+  if (terminal && terminal.local) {
+    document.getElementById('terminalLocal').textContent = `Sucursal: ${terminal.local.name}`;
+  }
+}
+
+iniciar();

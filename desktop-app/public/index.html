@@ -6,18 +6,32 @@
 <title>Desktop Botica</title>
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="cargando">
   <div class="app-shell">
     <aside class="sidebar">
       <div class="sidebar-brand">
         <span class="login-brand-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
         </span>
-        <span class="sidebar-brand-text">Desktop Botica<small>Sucursal (offline)</small></span>
+        <span class="sidebar-brand-text">Desktop Botica<small>Terminal de sucursal</small></span>
       </div>
 
+      <div class="sidebar-local">Sucursal<strong id="localActual">-</strong></div>
+
       <nav id="tabs">
-        <button data-tab="caja" class="activo">
+        <button data-tab="catalogo" data-permiso="catalogo.ver">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 11h18"/><path d="M9 7V4.8A1.8 1.8 0 0 1 10.8 3h2.4A1.8 1.8 0 0 1 15 4.8V7"/></svg>
+          Catálogo
+        </button>
+        <button data-tab="clientes" data-permiso="clientes.ver">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.3" cy="9" r="2.5"/><path d="M15.6 14.3c2.6.4 4.7 2.6 4.7 5.7"/></svg>
+          Clientes
+        </button>
+        <button data-tab="usuarios" data-permiso="usuarios.gestionar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.8-3 8.3-7 9-4-.7-7-4.2-7-9V6l7-3z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
+          Usuarios
+        </button>
+        <button data-tab="caja">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><circle cx="12" cy="15" r="1.4"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
           Caja
         </button>
@@ -25,32 +39,23 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2.5 3h2.4l2.4 12.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21.5 8H6.2"/></svg>
           Ventas
         </button>
-        <button data-tab="clientes">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.3" cy="9" r="2.5"/><path d="M15.6 14.3c2.6.4 4.7 2.6 4.7 5.7"/></svg>
-          Clientes
-        </button>
-        <button data-tab="catalogo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 11h18"/><path d="M9 7V4.8A1.8 1.8 0 0 1 10.8 3h2.4A1.8 1.8 0 0 1 15 4.8V7"/></svg>
-          Catálogo
-        </button>
-        <button data-tab="usuarios" class="solo-admin">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.8-3 8.3-7 9-4-.7-7-4.2-7-9V6l7-3z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
-          Usuarios
-        </button>
         <button data-tab="sync">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.6-4.4M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.4M20 19v-4h-4"/></svg>
           Sincronización
         </button>
       </nav>
 
-      <div class="sidebar-footer">Desktop Botica · Prototipo v0.2</div>
+      <div class="sidebar-footer">Desktop Botica · v0.3</div>
     </aside>
 
     <div class="content-area">
       <header class="topbar">
-        <h1 id="pageTitle">Caja</h1>
+        <h1 id="pageTitle">Catálogo</h1>
         <div class="topbar-user">
           <span id="usuarioActual"></span>
+          <button id="btnMiPassword" class="logout-btn" type="button" title="Cambiar mi contraseña">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3"/><path d="M17 6l3 3"/><path d="M15 8l2 2"/></svg>
+          </button>
           <button id="btnLogout" class="logout-btn" type="button" title="Cerrar sesión">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
           </button>
@@ -58,7 +63,124 @@
       </header>
 
       <main>
-        <section id="tab-caja" class="tab">
+        <!-- ======================= CATALOGO ======================= -->
+        <section id="tab-catalogo" class="tab" style="display:none">
+          <div class="tabs-mini" id="catalogoSubtabs">
+            <button type="button" data-sub="productos" class="activo">Productos</button>
+            <button type="button" data-sub="nuevo" data-permiso="catalogo.gestionar">Nuevo producto</button>
+            <button type="button" data-sub="maestros" data-permiso="catalogo.gestionar">Marcas y categorías</button>
+          </div>
+
+          <div class="card" data-subpanel="productos">
+            <div class="toolbar">
+              <input type="search" id="catBuscar" placeholder="Buscar por nombre, composición, laboratorio o código de barras..." />
+              <select id="catFiltroCategoria" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+              <select id="catFiltroMarca" aria-label="Marca"><option value="">Todos los laboratorios</option></select>
+              <select id="catFiltroStock" aria-label="Stock">
+                <option value="">Todo el stock</option>
+                <option value="con">Con stock</option>
+                <option value="bajo">Stock bajo el mínimo</option>
+                <option value="sin">Sin stock</option>
+              </select>
+              <label class="check"><input type="checkbox" id="catSoloActivos" checked /> Solo activos</label>
+            </div>
+            <table id="catalogoTabla">
+              <thead><tr>
+                <th>Producto</th><th>Laboratorio / categoría</th><th class="num">P. caja</th><th class="num">P. fracción</th>
+                <th>Stock</th><th>Estado</th><th>Acciones</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="paginador" id="catPaginador"></div>
+          </div>
+
+          <div class="card" data-subpanel="nuevo" style="display:none">
+            <div class="card-head"><h2 id="productoFormTitulo">Nuevo producto</h2></div>
+            <form id="productoForm" class="form-grid" novalidate>
+              <input type="hidden" id="productoId" />
+              <label class="campo ancho">Nombre del producto *<input id="pNombre" placeholder="Ej. PARACETAMOL 500MG CJA X 100 TAB" maxlength="255" /></label>
+              <label class="campo">Laboratorio / marca *<select id="pMarca"></select></label>
+              <label class="campo">Categoría *<select id="pCategoria"></select></label>
+              <label class="campo ancho">Composición *<input id="pComposicion" placeholder="Ej. PARACETAMOL 500MG" maxlength="100" /></label>
+              <label class="campo">Presentación *<input id="pPresentacion" placeholder="Ej. CJA X 100 TAB" maxlength="45" /></label>
+              <label class="campo">Forma farmacéutica *<input id="pFormaFarm" placeholder="Ej. TABLETAS" maxlength="45" list="formasFarm" /></label>
+              <label class="campo">Código de barras<input id="pBarras" maxlength="20" /></label>
+              <label class="campo">Precio de compra (S/)<input id="pPrecioCompra" type="number" step="0.01" min="0" /></label>
+              <label class="campo">Precio de venta caja / unidad (S/)<input id="pPrecioUnidad" type="number" step="0.01" min="0" /></label>
+              <label class="check"><input type="checkbox" id="pSeFracciona" /> Se vende por unidad suelta (fracción)</label>
+              <label class="campo">Unidades por caja<input id="pFraccion" type="number" step="1" min="2" disabled /></label>
+              <label class="campo">Precio por unidad suelta (S/)<input id="pPrecioFraccion" type="number" step="0.01" min="0" disabled /></label>
+              <label class="check"><input type="checkbox" id="pIgv" checked /> Afecto a IGV</label>
+              <label class="campo" id="pStockMinimoCampo">Stock mínimo (unidades mínimas de venta)<input id="pStockMinimo" type="number" step="1" min="0" value="0" /></label>
+              <div class="form-actions">
+                <button id="btnGuardarProducto" type="submit">Guardar producto</button>
+                <button id="btnCancelarProducto" class="secundario" type="button">Cancelar</button>
+                <span id="productoMsg"></span>
+              </div>
+            </form>
+            <div id="productoAviso" class="aviso"></div>
+            <datalist id="formasFarm">
+              <option value="TABLETAS"></option><option value="CAPSULAS"></option><option value="JARABE"></option>
+              <option value="SUSPENSION"></option><option value="SOLUCION INYECTABLE"></option><option value="CREMA"></option>
+              <option value="GOTAS"></option><option value="OVULOS"></option><option value="POLVO"></option>
+            </datalist>
+          </div>
+
+          <div class="card" data-subpanel="maestros" style="display:none">
+            <div class="maestros">
+              <div>
+                <h3>Laboratorios / marcas</h3>
+                <form id="marcaForm" class="inline-form"><input id="marcaNombre" placeholder="Nueva marca" maxlength="100" /><button type="submit">Agregar</button></form>
+                <p id="marcaMsg"></p>
+                <input type="search" id="marcaBuscar" placeholder="Filtrar..." />
+                <ul id="marcaLista"></ul>
+              </div>
+              <div>
+                <h3>Categorías</h3>
+                <form id="categoriaForm" class="inline-form"><input id="categoriaNombre" placeholder="Nueva categoría" maxlength="100" /><button type="submit">Agregar</button></form>
+                <p id="categoriaMsg"></p>
+                <input type="search" id="categoriaBuscar" placeholder="Filtrar..." />
+                <ul id="categoriaLista"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================= CLIENTES ======================= -->
+        <section id="tab-clientes" class="tab" style="display:none">
+          <div class="card">
+            <div class="toolbar">
+              <input type="search" id="cliBuscar" placeholder="Buscar por nombre o número de documento..." />
+              <label class="check"><input type="checkbox" id="cliSoloActivos" checked /> Solo activos</label>
+              <span class="spacer"></span>
+              <button type="button" id="btnNuevoCliente" data-permiso="clientes.crear">+ Nuevo cliente</button>
+            </div>
+            <table id="clienteTabla">
+              <thead><tr><th>Cliente</th><th>Documento</th><th>Tipo</th><th>Contacto</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="paginador" id="cliPaginador"></div>
+          </div>
+        </section>
+
+        <!-- ======================= USUARIOS ======================= -->
+        <section id="tab-usuarios" class="tab" style="display:none" data-permiso="usuarios.gestionar">
+          <div class="card">
+            <div class="toolbar">
+              <h2 style="margin:0">Usuarios de la terminal</h2>
+              <span class="spacer"></span>
+              <button type="button" id="btnNuevoUsuario">+ Nuevo usuario</button>
+            </div>
+            <table id="usuarioTabla">
+              <thead><tr><th>Usuario</th><th>Nombre</th><th>DNI</th><th>Rol</th><th>Sucursal</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <p id="usuarioMsg"></p>
+          </div>
+        </section>
+
+        <!-- ======================= CAJA / VENTAS / SYNC ======================= -->
+        <section id="tab-caja" class="tab" style="display:none">
           <div class="card">
             <div class="card-head"><h2>Apertura y cierre de caja</h2></div>
             <div id="cajaEstado"></div>
@@ -77,104 +199,17 @@
         <section id="tab-ventas" class="tab" style="display:none">
           <div class="card">
             <div class="card-head"><h2>Punto de venta</h2></div>
-            <div class="venta-form inline-form">
-              <select id="ventaProducto"></select>
-              <input id="ventaCantidad" type="number" value="1" min="1" />
+            <div class="toolbar">
+              <input type="search" id="ventaBuscar" placeholder="Buscar producto..." />
+              <select id="ventaProducto" aria-label="Producto"></select>
+              <select id="ventaModo" aria-label="Vender por"><option value="unidad">Caja / unidad</option><option value="fraccion">Unidad suelta</option></select>
+              <input id="ventaCantidad" type="number" value="1" min="1" step="1" style="width:90px" />
               <button id="btnAgregarItem">Agregar</button>
             </div>
-            <table id="ventaTabla"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody></tbody></table>
+            <table id="ventaTabla"><thead><tr><th>Producto</th><th>Por</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Subtotal</th><th></th></tr></thead><tbody></tbody></table>
             <p>Total: S/ <strong id="ventaTotal">0.00</strong></p>
             <button id="btnRegistrarVenta">Registrar venta</button>
             <p id="ventaMsg"></p>
-          </div>
-        </section>
-
-        <section id="tab-clientes" class="tab" style="display:none">
-          <div class="card">
-            <div class="card-head">
-              <h2>Clientes</h2>
-              <input id="clienteBusqueda" placeholder="Buscar cliente..." />
-            </div>
-            <table id="clienteTabla">
-              <thead><tr><th>Nombre</th><th>Doc.</th><th>Teléfono</th><th>Dirección</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <h3>Nuevo cliente</h3>
-            <form id="clienteForm" class="inline-form">
-              <input type="hidden" id="clienteId" />
-              <input id="clienteNombre" placeholder="Nombre" required />
-              <select id="clienteTipoDoc">
-                <option value="DNI">DNI</option>
-                <option value="RUC">RUC</option>
-                <option value="CE">Carné de extranjería</option>
-                <option value="SIN_DOCUMENTO">Sin documento</option>
-              </select>
-              <input id="clienteDocumento" placeholder="Número de documento" />
-              <input id="clienteTelefono" placeholder="Teléfono" />
-              <input id="clienteDireccion" placeholder="Dirección" />
-              <button id="btnGuardarCliente" type="submit">Guardar cliente</button>
-              <button id="btnCancelarClienteEdit" class="secundario" type="button" style="display:none">Cancelar edición</button>
-            </form>
-            <p id="clienteMsg"></p>
-          </div>
-        </section>
-
-        <section id="tab-catalogo" class="tab" style="display:none">
-          <div class="card">
-            <div class="card-head">
-              <h2>Catálogo / stock</h2>
-              <input id="catalogoBusqueda" placeholder="Buscar producto, categoría o marca..." />
-            </div>
-            <table id="catalogoTabla">
-              <thead><tr><th>Producto</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th class="solo-admin">Acciones</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="card solo-admin">
-            <h3>Nuevo producto</h3>
-            <form id="productoForm" class="inline-form">
-              <input type="hidden" id="productoId" />
-              <input id="productoNombre" placeholder="Nombre" required />
-              <input id="productoCategoria" placeholder="Categoría" />
-              <input id="productoMarca" placeholder="Marca / laboratorio" />
-              <input id="productoPrecio" type="number" step="0.01" min="0" placeholder="Precio" required />
-              <input id="productoStock" type="number" step="0.01" min="0" placeholder="Stock" required />
-              <input id="productoStockMinimo" type="number" step="0.01" min="0" placeholder="Stock mínimo" />
-              <input id="productoCodigoBarras" placeholder="Código de barras" />
-              <button id="btnGuardarProducto" type="submit">Guardar producto</button>
-              <button id="btnCancelarProductoEdit" class="secundario" type="button" style="display:none">Cancelar edición</button>
-            </form>
-            <p id="productoMsg"></p>
-          </div>
-        </section>
-
-        <section id="tab-usuarios" class="tab solo-admin" style="display:none">
-          <div class="card">
-            <div class="card-head"><h2>Usuarios</h2></div>
-            <table id="usuarioTabla">
-              <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <h3>Nuevo usuario</h3>
-            <form id="usuarioForm" class="inline-form">
-              <input id="usuarioUsername" placeholder="Usuario" required />
-              <input id="usuarioPassword" type="password" placeholder="Contraseña (mín. 6)" required />
-              <input id="usuarioNombre" placeholder="Nombre completo" required />
-              <input id="usuarioEmail" type="email" placeholder="Email" />
-              <select id="usuarioRol">
-                <option value="vendedor">Vendedor</option>
-                <option value="admin">Administrador</option>
-              </select>
-              <button id="btnGuardarUsuario" type="submit">Crear usuario</button>
-            </form>
-            <p id="usuarioMsg"></p>
           </div>
         </section>
 
@@ -190,6 +225,111 @@
     </div>
   </div>
 
+  <!-- ======================= DIALOGOS ======================= -->
+  <dialog id="dlgCliente">
+    <div class="dlg-head"><h2 id="dlgClienteTitulo">Nuevo cliente</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="clienteForm" novalidate>
+      <input type="hidden" id="clienteId" />
+      <div class="fila-2">
+        <label class="campo">Tipo de documento<select id="cTipoDoc"></select></label>
+        <label class="campo">Número de documento<input id="cCode" maxlength="11" autocomplete="off" /></label>
+      </div>
+      <div id="cDocAviso" class="aviso"></div>
+      <label class="campo">Nombre o razón social *<input id="cNombre" maxlength="255" /></label>
+      <label class="campo">Dirección<input id="cDireccion" maxlength="200" /></label>
+      <div class="fila-2">
+        <label class="campo">Teléfono<input id="cTelefono" inputmode="numeric" maxlength="9" /></label>
+        <label class="campo">Email<input id="cEmail" type="email" /></label>
+      </div>
+      <p id="clienteMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit" id="btnGuardarCliente">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgStock">
+    <div class="dlg-head"><h2>Ajuste de stock</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="stockForm" novalidate>
+      <input type="hidden" id="sProductoId" />
+      <p><strong id="sProductoNombre"></strong><span class="sub" id="sStockActual"></span></p>
+      <label class="campo">Tipo de ajuste<select id="sTipo"><option value="entrada">Entrada (ingreso, conteo a favor)</option><option value="salida">Salida (merma, vencimiento, conteo en contra)</option></select></label>
+      <div class="fila-2">
+        <label class="campo" id="sCajasCampo">Cajas<input id="sCajas" type="number" min="0" step="1" value="0" /></label>
+        <label class="campo" id="sSueltasCampo">Unidades sueltas<input id="sSueltas" type="number" min="0" step="1" value="0" /></label>
+      </div>
+      <label class="campo">Motivo *<input id="sMotivo" maxlength="200" placeholder="Ej. Ingreso guía 001-2345 / Vencimiento lote X" /></label>
+      <label class="campo">Stock mínimo (unidades mínimas de venta)<input id="sMinimo" type="number" min="0" step="1" /></label>
+      <p id="stockMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cerrar</button><button type="submit">Registrar ajuste</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgKardex" class="ancho">
+    <div class="dlg-head"><h2 id="kTitulo">Kardex</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <div class="dlg-body">
+      <table id="kardexTabla"><thead><tr><th>Fecha</th><th>Movimiento</th><th class="num">Cantidad</th><th class="num">Saldo</th><th>Detalle</th></tr></thead><tbody></tbody></table>
+      <div class="paginador" id="kPaginador"></div>
+    </div>
+  </dialog>
+
+  <dialog id="dlgUsuario">
+    <div class="dlg-head"><h2 id="dlgUsuarioTitulo">Nuevo usuario</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="usuarioForm" novalidate>
+      <input type="hidden" id="uId" />
+      <div class="fila-2">
+        <label class="campo">Usuario<input id="uUsername" placeholder="Ej. JPEREZ1" maxlength="30" autocomplete="off" /></label>
+        <label class="campo" id="uPasswordCampo">Contraseña (mín. 6)<input id="uPassword" type="password" autocomplete="new-password" /></label>
+      </div>
+      <div class="fila-2">
+        <label class="campo">Nombres *<input id="uFirstname" maxlength="60" /></label>
+        <label class="campo">Apellidos<input id="uLastname" maxlength="60" /></label>
+      </div>
+      <div class="fila-2">
+        <label class="campo">DNI *<input id="uDni" inputmode="numeric" maxlength="8" /></label>
+        <label class="campo">Teléfono<input id="uPhone" inputmode="numeric" maxlength="9" /></label>
+      </div>
+      <label class="campo">Email<input id="uEmail" type="email" /></label>
+      <div class="fila-2">
+        <label class="campo">Rol<select id="uTipo"></select></label>
+        <label class="campo">Sucursal<select id="uLocal"></select></label>
+      </div>
+      <p id="uMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgReset">
+    <div class="dlg-head"><h2>Restablecer contraseña</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="resetForm" novalidate>
+      <input type="hidden" id="rId" />
+      <p>Asigna una contraseña temporal a <strong id="rNombre"></strong>. Deberá cambiarla la próxima vez que inicie sesión y se cerrarán sus sesiones abiertas.</p>
+      <label class="campo">Contraseña temporal (mín. 6)<input id="rPassword" type="text" autocomplete="off" /></label>
+      <p id="rMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Restablecer</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgRenombrar">
+    <div class="dlg-head"><h2 id="rnTitulo">Renombrar</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="renombrarForm" novalidate>
+      <input type="hidden" id="rnId" /><input type="hidden" id="rnRuta" />
+      <label class="campo">Nuevo nombre<input id="rnNombre" maxlength="100" /></label>
+      <p id="rnMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgMiPassword">
+    <div class="dlg-head"><h2>Cambiar mi contraseña</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
+    <form class="dlg-body" id="miPasswordForm" novalidate>
+      <label class="campo">Contraseña actual<input id="mpActual" type="password" autocomplete="current-password" /></label>
+      <label class="campo">Nueva contraseña (mín. 6)<input id="mpNueva" type="password" autocomplete="new-password" /></label>
+      <label class="campo">Repite la nueva contraseña<input id="mpNueva2" type="password" autocomplete="new-password" /></label>
+      <p id="mpMsg"></p>
+      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Cambiar</button></div>
+    </form>
+  </dialog>
+
+  <script src="api.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

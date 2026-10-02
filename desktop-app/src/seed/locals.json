@@ -1,0 +1,226 @@
+[
+  {
+    "id": 1,
+    "name": "Almacen",
+    "direccion": "MZ. P LOTE. 01 URB. PARQUE RESIDENCIAL MONTEVERDE / PIURA - PIURA - CASTILLA",
+    "zona": 6,
+    "serie": "S01",
+    "active": 1
+  },
+  {
+    "id": 2,
+    "name": "Solidaria 6M",
+    "direccion": "AV. CAYETANO HEREDIA NRO. 1056 / PIURA - PIURA - CATACAOS",
+    "zona": 3,
+    "serie": "S02",
+    "active": 1
+  },
+  {
+    "id": 3,
+    "name": "Solidaria Cayetano",
+    "direccion": "AV. CAYETANO HEREDIA NRO. 750 / PIURA - PIURA - CATACAOS",
+    "zona": 3,
+    "serie": "S03",
+    "active": 1
+  },
+  {
+    "id": 4,
+    "name": "Solidaria Plaza Catacaos",
+    "direccion": "JR. TRUJILLO NRO. 131 / PIURA - PIURA - CATACAOS",
+    "zona": 3,
+    "serie": "S04",
+    "active": 1
+  },
+  {
+    "id": 5,
+    "name": "Solidaria Villasol",
+    "direccion": "AV. GUARDIA CIVIL MZ. B LOTE. 06 A.H. VILLASOL / PIURA - PIURA - CASTILLA",
+    "zona": 1,
+    "serie": "S05",
+    "active": 1
+  },
+  {
+    "id": 6,
+    "name": "Solidaria Chulucanas Mercado",
+    "direccion": "JR. LAMBAYEQUE NRO. 984 / PIURA - MORROPON - CHULUCANAS",
+    "zona": 4,
+    "serie": "S06",
+    "active": 0
+  },
+  {
+    "id": 7,
+    "name": "Solidaria Chulucanas Plaza",
+    "direccion": "JR. LAMBAYEQUE NRO. 509 CENT / PIURA - MORROPON - CHULUCANAS",
+    "zona": 4,
+    "serie": "S07",
+    "active": 1
+  },
+  {
+    "id": 8,
+    "name": "Solidaria Grau",
+    "direccion": "AV. GRAU NRO. 461 / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S08",
+    "active": 1
+  },
+  {
+    "id": 9,
+    "name": "Solidaria Ignacio Merino",
+    "direccion": "MZ. G LOTE. 17 URB. IGNACIO MERINO / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S09",
+    "active": 1
+  },
+  {
+    "id": 10,
+    "name": "Solidaria Ovalo",
+    "direccion": "AV. GRAU NRO. 555 / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S10",
+    "active": 1
+  },
+  {
+    "id": 11,
+    "name": "Solidaria San Jose",
+    "direccion": "AV. GRAU NRO. 1709 URB. SAN JOSE / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S11",
+    "active": 0
+  },
+  {
+    "id": 12,
+    "name": "Solidaria Castilla",
+    "direccion": "CALLE AYACUCHO NRO 400 INT 01 / PIURA - PIURA- CASTILLA",
+    "zona": 8,
+    "serie": "S12",
+    "active": 1
+  },
+  {
+    "id": 13,
+    "name": "Solidaria Buenos Aires",
+    "direccion": "AV. BUENOS AIRES Nº 665 / PIURA - SULLANA - SULLANA",
+    "zona": 5,
+    "serie": "S13",
+    "active": 1
+  },
+  {
+    "id": 14,
+    "name": "Solidaria Hosp. Santa Rosa",
+    "direccion": "AV CHULUCANAS 213 AH SANTA ROSA / PIURA - PIURA- VEINTISEIS DE OCTUBRE",
+    "zona": 8,
+    "serie": "S14",
+    "active": 1
+  },
+  {
+    "id": 15,
+    "name": "Solidaria Terminal",
+    "direccion": "URB. EL BOSQUE MZ A LT 7B / PIURA - PIURA - CASTILLA",
+    "zona": 1,
+    "serie": "S15",
+    "active": 1
+  },
+  {
+    "id": 16,
+    "name": "Solidaria Hosp. Sullana",
+    "direccion": "AV RUISEÑOR DEL CHIRA MZ E, SUBLOTE 2-11 / PIURA - SULLANA - SULLANA",
+    "zona": 2,
+    "serie": "S16",
+    "active": 1
+  },
+  {
+    "id": 17,
+    "name": "Solidaria Union Mercado",
+    "direccion": "CAL.LIMA NRO. 549 / PIURA - PIURA - LA UNION",
+    "zona": 7,
+    "serie": "S17",
+    "active": 1
+  },
+  {
+    "id": 18,
+    "name": "Solidaria Union 3",
+    "direccion": "CAL.LIMA NRO. 527 / PIURA - PIURA - LA UNION",
+    "zona": 7,
+    "serie": "S18",
+    "active": 1
+  },
+  {
+    "id": 19,
+    "name": "PRUEBAS - SISTEMA",
+    "direccion": "MZ. P LOTE. 01 URB. PARQUE RESIDENCIAL MONTEVERDE / PIURA - PIURA - CASTILLA",
+    "zona": 6,
+    "serie": "",
+    "active": 1
+  },
+  {
+    "id": 20,
+    "name": "Almacen - Vencidos",
+    "direccion": "Avenida Prueba",
+    "zona": 6,
+    "serie": "",
+    "active": 1
+  },
+  {
+    "id": 21,
+    "name": "Almacen - Canjes",
+    "direccion": "Avenida Prueba",
+    "zona": 6,
+    "serie": "",
+    "active": 1
+  },
+  {
+    "id": 22,
+    "name": "Solidaria 18 de Mayo",
+    "direccion": "A.H. 18 DE MAYO MZ C LOTE A01 / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S19",
+    "active": 0
+  },
+  {
+    "id": 23,
+    "name": "Solidaria Catacaos Mercado",
+    "direccion": "AV CAYETANO HEREDIA 145 /  PIURA - PIURA - CATACAOS",
+    "zona": 3,
+    "serie": "S20",
+    "active": 0
+  },
+  {
+    "id": 24,
+    "name": "Solidaria Nueva Esperanza",
+    "direccion": "AV CIRCUNVALACION MZ J4 LOTE 18 AH NUEVA ESPERANZA / PIURA - PIURA - 26 DE OCTUBRE",
+    "zona": 1,
+    "serie": "S21",
+    "active": 0
+  },
+  {
+    "id": 25,
+    "name": "Solidaria Ovalo 2",
+    "direccion": "AV. GRAU NRO. 483 / PIURA - PIURA - PIURA",
+    "zona": 2,
+    "serie": "S22",
+    "active": 1
+  },
+  {
+    "id": 26,
+    "name": "Lima Surquillo",
+    "direccion": "Avenida Prueba",
+    "zona": 9,
+    "serie": "S26",
+    "active": 1
+  },
+  {
+    "id": 27,
+    "name": "Lima SMP",
+    "direccion": "Avenida Prueba",
+    "zona": 9,
+    "serie": "S27",
+    "active": 1
+  },
+  {
+    "id": 28,
+    "name": "Lima Cercadoooo",
+    "direccion": "Avenida Prueba",
+    "zona": 9,
+    "serie": "S28",
+    "active": 1
+  }
+]
