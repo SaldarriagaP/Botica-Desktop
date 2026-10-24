@@ -1,0 +1,20 @@
+<div class="card">
+  <div class="card-head"><h2>Punto de venta</h2></div>
+  <div class="toolbar">
+    <input type="search" id="ventaBuscar" placeholder="Buscar producto..." />
+    <select id="ventaProducto" aria-label="Producto"></select>
+    <select id="ventaModo" aria-label="Vender por">
+      <option value="unidad">Caja / unidad</option>
+      <option value="fraccion">Unidad suelta</option>
+    </select>
+    <input id="ventaCantidad" type="number" value="1" min="1" step="1" style="width:90px" />
+    <button id="btnAgregarItem">Agregar</button>
+  </div>
+  <table id="ventaTabla">
+    <thead><tr><th>Producto</th><th>Por</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Subtotal</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p>Total: S/ <strong id="ventaTotal">0.00</strong></p>
+  <button id="btnRegistrarVenta">Registrar venta</button>
+  <p id="ventaMsg"></p>
+</div>

@@ -180,47 +180,9 @@
         </section>
 
         <!-- ======================= CAJA / VENTAS / SYNC ======================= -->
-        <section id="tab-caja" class="tab" style="display:none">
-          <div class="card">
-            <div class="card-head"><h2>Apertura y cierre de caja</h2></div>
-            <div id="cajaEstado"></div>
-            <div id="cajaAbrirForm" class="inline-form">
-              <input id="montoApertura" type="number" placeholder="Monto de apertura" />
-              <button id="btnAbrirCaja">Abrir caja</button>
-            </div>
-            <div id="cajaCerrarForm" class="inline-form" style="display:none">
-              <input id="montoCierre" type="number" placeholder="Monto de cierre" />
-              <button id="btnCerrarCaja">Cerrar caja</button>
-            </div>
-            <p id="cajaMsg"></p>
-          </div>
-        </section>
-
-        <section id="tab-ventas" class="tab" style="display:none">
-          <div class="card">
-            <div class="card-head"><h2>Punto de venta</h2></div>
-            <div class="toolbar">
-              <input type="search" id="ventaBuscar" placeholder="Buscar producto..." />
-              <select id="ventaProducto" aria-label="Producto"></select>
-              <select id="ventaModo" aria-label="Vender por"><option value="unidad">Caja / unidad</option><option value="fraccion">Unidad suelta</option></select>
-              <input id="ventaCantidad" type="number" value="1" min="1" step="1" style="width:90px" />
-              <button id="btnAgregarItem">Agregar</button>
-            </div>
-            <table id="ventaTabla"><thead><tr><th>Producto</th><th>Por</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Subtotal</th><th></th></tr></thead><tbody></tbody></table>
-            <p>Total: S/ <strong id="ventaTotal">0.00</strong></p>
-            <button id="btnRegistrarVenta">Registrar venta</button>
-            <p id="ventaMsg"></p>
-          </div>
-        </section>
-
-        <section id="tab-sync" class="tab" style="display:none">
-          <div class="card">
-            <div class="card-head"><h2>Sincronización</h2></div>
-            <p>Última sincronización: <strong id="lastSync">-</strong></p>
-            <button id="btnSincronizar">Sincronizar ahora</button>
-            <p id="syncMsg"></p>
-          </div>
-        </section>
+        <section id="tab-caja" class="tab" style="display:none" data-vista="caja"></section>
+        <section id="tab-ventas" class="tab" style="display:none" data-vista="ventas"></section>
+        <section id="tab-sync" class="tab" style="display:none" data-vista="sync"></section>
       </main>
     </div>
   </div>
@@ -329,7 +291,8 @@
     </form>
   </dialog>
 
-  <script src="api.js"></script>
-  <script src="app.js"></script>
+  <!--script src="api.js"></script-->
+  <!--script src="app.js"></script-->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

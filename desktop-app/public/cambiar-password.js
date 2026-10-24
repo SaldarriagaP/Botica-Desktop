@@ -1,3 +1,5 @@
+import { Sesion, api } from './api.js';
+
 const errorEl = document.getElementById('error');
 
 function mostrarError(texto) {

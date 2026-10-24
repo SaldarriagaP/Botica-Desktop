@@ -1,44 +1,34 @@
 // Interfaz principal. Requiere api.js (Sesion, api, escapeHtml).
 
+import { Sesion, api } from '../api.js';
+import {
+  $, h, postJson, putJson, soles, fecha,
+  mensaje, limpiarMensaje, debounce, badgeEstado, renderPaginador
+} from './core/utils.js';
+import { initVentas } from './controllers/ventas.js';
+import { initCaja } from './controllers/caja.js';
+import { initSync } from './controllers/sync.js';
+
+// Función para cargar el HTML de una vista y luego inicializar su controlador
+async function cargarVista(nombre) {
+  const contenedor = document.querySelector(`[data-vista="${nombre}"]`);
+  
+  // Si ya está cargada, no hacemos nada
+  if (contenedor.dataset.cargada === '1') return;
+  
+  // Cargar el HTML
+  const html = await fetch(`views/${nombre}.html`).then(r => r.text());
+  contenedor.innerHTML = html;
+  contenedor.dataset.cargada = '1';
+
+  // Inicializar el controlador correspondiente justo después de cargar el HTML
+  if (nombre === 'ventas') initVentas();
+  if (nombre === 'caja') initCaja();
+  if (nombre === 'sync') initSync();
+}
+
 let usuario = null;
-const h = escapeHtml;
-const $ = (id) => document.getElementById(id);
-
-const postJson = (url, body = {}) => api(url, { method: 'POST', body });
-const putJson = (url, body = {}) => api(url, { method: 'PUT', body });
 const puede = (permiso) => !!usuario && usuario.permisos.includes(permiso);
-const soles = (n) => `S/ ${Number(n || 0).toFixed(2)}`;
-const fecha = (iso) => (iso ? new Date(iso).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) : '');
-
-function mensaje(id, res, textoOk) {
-  const el = $(id);
-  el.className = res.ok ? 'ok-msg' : 'error-msg';
-  el.textContent = res.ok ? textoOk : res.error;
-}
-
-function limpiarMensaje(id) {
-  $(id).textContent = '';
-  $(id).className = '';
-}
-
-function debounce(fn, ms = 250) {
-  let t;
-  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-}
-
-function badgeEstado(activo) {
-  return activo ? '<span class="badge badge-activo">Activo</span>' : '<span class="badge badge-inactivo">Inactivo</span>';
-}
-
-function renderPaginador(contenedor, r, alCambiar) {
-  const el = $(contenedor);
-  if (!r || r.total === 0) { el.innerHTML = '<span class="muted">Sin resultados</span>'; return; }
-  el.innerHTML = `
-    <span class="muted">${r.total} registro(s) · página ${r.pagina} de ${r.paginas}</span>
-    <button type="button" class="secundario" data-pag="${r.pagina - 1}" ${r.pagina <= 1 ? 'disabled' : ''}>‹ Anterior</button>
-    <button type="button" class="secundario" data-pag="${r.pagina + 1}" ${r.pagina >= r.paginas ? 'disabled' : ''}>Siguiente ›</button>`;
-  el.querySelectorAll('[data-pag]').forEach((b) => b.addEventListener('click', () => alCambiar(Number(b.dataset.pag))));
-}
 
 // --- Dialogos ---
 document.querySelectorAll('dialog [data-cerrar]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
@@ -67,9 +57,14 @@ $('miPasswordForm').addEventListener('submit', async (e) => {
 });
 
 // --- Tabs ---
-function mostrarTab(nombre) {
+async function mostrarTab(nombre) {
   const btn = document.querySelector(`#tabs button[data-tab="${nombre}"]`);
   if (!btn) return;
+
+  if (['ventas', 'caja', 'sync'].includes(nombre)) {
+    await cargarVista(nombre);
+  }
+
   document.querySelectorAll('#tabs button').forEach((b) => b.classList.remove('activo'));
   document.querySelectorAll('.tab').forEach((t) => (t.style.display = 'none'));
   btn.classList.add('activo');
@@ -569,85 +564,8 @@ $('resetForm').addEventListener('submit', async (e) => {
 // =====================================================================
 // CAJA, VENTAS Y SINCRONIZACION (fuera del foco de esta entrega)
 // =====================================================================
-async function cargarCaja() {
-  const estado = await api('/api/caja/estado');
-  $('cajaEstado').textContent = estado ? `Caja abierta por ${estado.usuario} con S/ ${estado.monto_apertura}` : 'No hay caja abierta.';
-  $('cajaAbrirForm').style.display = estado ? 'none' : 'block';
-  $('cajaCerrarForm').style.display = estado ? 'block' : 'none';
-  return estado;
-}
 
-$('btnAbrirCaja').addEventListener('click', async () => {
-  const res = await postJson('/api/caja/abrir', { monto: Number($('montoApertura').value || 0) });
-  mensaje('cajaMsg', res, 'Caja abierta');
-  if (res.ok) $('montoApertura').value = '';
-  cargarCaja();
-});
-
-$('btnCerrarCaja').addEventListener('click', async () => {
-  const res = await postJson('/api/caja/cerrar', { monto: Number($('montoCierre').value || 0) });
-  mensaje('cajaMsg', res, 'Caja cerrada');
-  if (res.ok) $('montoCierre').value = '';
-  cargarCaja();
-});
-
-let productosVenta = [];
-let itemsVenta = [];
-
-async function buscarProductosVenta() {
-  const r = await api('/api/productos?' + new URLSearchParams({ q: $('ventaBuscar').value, soloActivos: '1', porPagina: 30 }));
-  productosVenta = r.items;
-  $('ventaProducto').innerHTML = productosVenta.map((p) =>
-    `<option value="${p.id}">${h(p.name)} · ${soles(p.precio_unidad)} · stock ${h(p.stock_detalle.texto)}</option>`).join('');
-}
-$('ventaBuscar').addEventListener('input', debounce(buscarProductosVenta));
-
-$('btnAgregarItem').addEventListener('click', () => {
-  const p = productosVenta.find((x) => x.id === Number($('ventaProducto').value));
-  if (!p) return;
-  const modo = $('ventaModo').value;
-  if (modo === 'fraccion' && !p.se_fracciona) {
-    return mensaje('ventaMsg', { ok: false, error: `"${p.name}" no se vende por unidad suelta` });
-  }
-  limpiarMensaje('ventaMsg');
-  itemsVenta.push({ productId: p.id, nombre: p.name, modo, cantidad: Number($('ventaCantidad').value || 1),
-    precio: modo === 'fraccion' ? p.precio_fraccion : p.precio_unidad });
-  renderVenta();
-});
-
-function renderVenta() {
-  document.querySelector('#ventaTabla tbody').innerHTML = itemsVenta.map((it, i) => `
-    <tr><td>${h(it.nombre)}</td><td>${it.modo === 'fraccion' ? 'Unidad suelta' : 'Caja / unidad'}</td>
-    <td class="num">${h(it.cantidad)}</td><td class="num">${soles(it.precio)}</td><td class="num">${soles(it.precio * it.cantidad)}</td>
-    <td><button class="secundario" data-quitar="${i}">Quitar</button></td></tr>`).join('');
-  $('ventaTotal').textContent = itemsVenta.reduce((acc, it) => acc + it.precio * it.cantidad, 0).toFixed(2);
-}
-
-document.querySelector('#ventaTabla tbody').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-quitar]');
-  if (b) { itemsVenta.splice(Number(b.dataset.quitar), 1); renderVenta(); }
-});
-
-$('btnRegistrarVenta').addEventListener('click', async () => {
-  const res = await postJson('/api/ventas', { items: itemsVenta.map(({ productId, cantidad, modo }) => ({ productId, cantidad, modo })) });
-  mensaje('ventaMsg', res, res.ok ? `Venta registrada (${soles(res.total)})` : '');
-  if (!res.ok) return;
-  itemsVenta = [];
-  renderVenta();
-  buscarProductosVenta();
-  cargarCatalogo();
-});
-
-async function cargarSyncEstado() {
-  const estado = await api('/api/sync/estado');
-  $('lastSync').textContent = estado.lastSyncAt ? fecha(estado.lastSyncAt) : 'nunca';
-}
-
-$('btnSincronizar').addEventListener('click', async () => {
-  $('syncMsg').textContent = 'Sincronizando...';
-  const res = await postJson('/api/sync');
-  $('syncMsg').textContent = res.ok ? `OK: ${res.productosActualizados} productos, ${res.ventasSubidas} ventas subidas` : `Error: ${res.error}`;
-  cargarSyncEstado();
+document.addEventListener('sync-completada', () => {
   cargarCatalogo();
 });
 
@@ -669,7 +587,8 @@ async function iniciar() {
   $('localActual').textContent = usuario.localNombre || 'Sin sucursal asignada';
   document.querySelectorAll('[data-permiso]').forEach((el) => { if (!puede(el.dataset.permiso)) el.remove(); });
 
-  const cajaAbierta = await cargarCaja();
+  const cajaEstado = await api('/api/caja/estado');
+  const cajaAbierta = !!cajaEstado;
   // Como en el sistema web: el vendedor va a apertura de caja si esta cerrada
   // y directo a ventas si ya esta abierta. Los demas roles, al catalogo.
   mostrarTab(usuario.type === 2 ? (cajaAbierta ? 'ventas' : 'caja') : 'catalogo');
@@ -682,8 +601,7 @@ async function iniciar() {
   await cargarMaestros();
   cargarCatalogo(1);
   cargarClientes(1);
-  buscarProductosVenta();
-  cargarSyncEstado();
+
   if (puede('usuarios.gestionar')) {
     await cargarOpcionesUsuario();
     cargarUsuarios();

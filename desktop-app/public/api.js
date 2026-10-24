@@ -55,3 +55,5 @@ async function api(url, { method = 'GET', body } = {}) {
 function escapeHtml(valor) {
   return String(valor ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+
+export { Sesion, api, escapeHtml };
