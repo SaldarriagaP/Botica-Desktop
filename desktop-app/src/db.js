@@ -3,6 +3,24 @@
 
 const path = require('path');
 const fs = require('fs');
+
+// better-sqlite3 solo trae binarios para Node 22+ en x64/arm64. Con un Node
+// mas viejo el proceso muere con "Segmentation fault" sin ningun mensaje, asi
+// que validamos antes de cargarlo para decir que hay que actualizar.
+const nodeMayor = Number(process.versions.node.split('.')[0]);
+if (nodeMayor < 22) {
+  throw new Error(
+    `Desktop Botica necesita Node.js 22 o mas nuevo (tienes ${process.version}). ` +
+      'Instala Node 22+ desde https://nodejs.org, borra la carpeta node_modules y vuelve a correr "npm install".'
+  );
+}
+if (!['x64', 'arm64'].includes(process.arch)) {
+  throw new Error(
+    `Desktop Botica necesita Node.js de 64 bits (tienes ${process.arch}). ` +
+      'Instala la version x64 de Node 22+, borra node_modules y vuelve a correr "npm install".'
+  );
+}
+
 const Database = require('better-sqlite3');
 const config = require('./config');
 const { migrar } = require('./migrations');

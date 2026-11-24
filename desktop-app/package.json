@@ -1,5 +1,6 @@
 {
   "name": "botica-desktop-app",
+  "productName": "Desktop Botica",
   "version": "0.3.0",
   "description": "App de escritorio offline-first para una sucursal de Boticas Solidaria (Electron + Node + SQLite).",
   "main": "electron-main.js",
@@ -7,7 +8,9 @@
     "start": "electron .",
     "start:web": "node server.js",
     "importar": "node scripts/importar-web.js",
-    "test": "node --test --test-reporter=spec \"test/**/*.test.js\""
+    "test": "node --test --test-reporter=spec \"test/**/*.test.js\"",
+    "dist": "electron-builder --win --publish never",
+    "release": "electron-builder --win --publish always"
   },
   "engines": {
     "node": ">=22"
@@ -15,9 +18,61 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
+    "electron-updater": "^6.8.11",
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "electron": "^44.4.3"
+    "electron": "^44.4.3",
+    "electron-builder": "^26.18.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "electron-winstaller@5.4.0": true
+  },
+  "author": "SaldarriagaP",
+  "build": {
+    "appId": "pe.boticas.desktopbotica",
+    "productName": "Desktop Botica",
+    "files": [
+      "electron-main.js",
+      "server.js",
+      "src/**/*",
+      "public/**/*",
+      "config/**/*",
+      "package.json",
+      "!data/**",
+      "!test/**",
+      "!scripts/**"
+    ],
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Desktop Botica"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "SaldarriagaP",
+        "repo": "Botica-Desktop",
+        "releaseType": "release"
+      }
+    ]
   }
 }

@@ -1,0 +1,54 @@
+# Cada push a main que toque la app compila el instalador .exe y lo publica
+# como un Release en GitHub. Las apps ya instaladas detectan ese Release y se
+# actualizan solas (electron-updater), asi que nadie tiene que reinstalar.
+name: Publicar Desktop Botica
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'desktop-app/**'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: desktop-app/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Pruebas
+        run: npm test
+
+      # Version automatica: MAYOR.MENOR de package.json + numero de ejecucion.
+      # Ej. 0.3.0 en package.json -> se publica 0.3.17. Asi cada push es una
+      # version mas nueva y el actualizador la reconoce.
+      - name: Calcular version
+        shell: bash
+        run: |
+          base=$(node -p "require('./package.json').version.split('.').slice(0,2).join('.')")
+          npm version "$base.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+
+      - name: Compilar y publicar
+        run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

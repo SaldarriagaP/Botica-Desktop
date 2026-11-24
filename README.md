@@ -49,3 +49,20 @@ con `{ "localId": 3 }` (IDs de la tabla `locals` del sistema web).
 > **Nota:** `better-sqlite3` requiere Node 22+, así que la versión de
 > Electron tiene que traer Node 22 o más nuevo (hoy Electron 44). Si la app
 > se cierra al abrir, esa es la primera causa a revisar.
+
+## Instalador (.exe) y actualizaciones automáticas
+
+- Cada push a `main` que toque `desktop-app/` ejecuta el workflow
+  `.github/workflows/release.yml`: corre las pruebas, compila
+  `Desktop Botica Setup X.Y.Z.exe` y lo publica en
+  [Releases](https://github.com/SaldarriagaP/Botica-Desktop/releases).
+- La versión se calcula sola: `MAYOR.MENOR` de `desktop-app/package.json` +
+  número de ejecución (ej. `0.3.17`). Para un salto grande, cambien `0.3.0` a `0.4.0`.
+- El instalador se baja **una sola vez**. La app instalada revisa Releases al
+  abrir (y cada 2 h), descarga la versión nueva en segundo plano y ofrece
+  reiniciar para aplicarla.
+- Los datos de la sucursal (base SQLite y `config.json`) viven en
+  `%APPDATA%\Desktop Botica\data`, fuera de la carpeta del programa, así que
+  las actualizaciones no los borran.
+- `npm run dist` (en `desktop-app`) compila el instalador en local en `desktop-app/dist/`
+  sin publicar nada.
