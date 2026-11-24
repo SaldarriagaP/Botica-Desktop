@@ -12,10 +12,10 @@ Catálogo de productos** — detalle en [docs/MODULOS.md](docs/MODULOS.md).
 |-----------|-----------|--------|
 | 1 | Autenticación local, esquema SQLite alineado con el web | ✅ [docs/ITERACION-1.md](docs/ITERACION-1.md) |
 | — | Clientes y Catálogo completos, permisos por rol, carga inicial desde el web | ✅ [docs/MODULOS.md](docs/MODULOS.md) |
-| 2 | Caja (turnos) y Clientes | pendiente |
-| 3 | Catálogo/stock local y punto de venta (fracciones, IGV, kardex) | pendiente |
-| 4 | Sincronización pull/push con outbox y healthcheck | pendiente |
-| 5 | Rechazos del central, reconciliación de stock, estabilización | pendiente |
+| 2 | Caja: turnos con cuadre (esperado vs. contado) e historial | ✅ [docs/MODULOS.md](docs/MODULOS.md#5-caja-y-ventas) |
+| 3 | Punto de venta: boleta/factura con serie de la sucursal, IGV, medios de pago, vuelto, kardex | ✅ [docs/MODULOS.md](docs/MODULOS.md#5-caja-y-ventas) |
+| 4 | Sincronización manual segura: reintentos, timeout, ventas nunca se pierden | ✅ [docs/MODULOS.md](docs/MODULOS.md#6-sincronización) |
+| 5 | Sincronización automática en segundo plano, bajada de usuarios/clientes y reconciliación de stock con el central | pendiente (requiere la API real del sistema web) |
 
 ## Estructura
 
@@ -57,7 +57,7 @@ con `{ "localId": 3 }` (IDs de la tabla `locals` del sistema web).
   `Desktop Botica Setup X.Y.Z.exe` y lo publica en
   [Releases](https://github.com/SaldarriagaP/Botica-Desktop/releases).
 - La versión se calcula sola: `MAYOR.MENOR` de `desktop-app/package.json` +
-  número de ejecución (ej. `0.3.17`). Para un salto grande, cambien `0.3.0` a `0.4.0`.
+  número de ejecución (ej. `0.4.17`). Para un salto grande, cambien `0.4.0` a `0.5.0`.
 - El instalador se baja **una sola vez**. La app instalada revisa Releases al
   abrir (y cada 2 h), descarga la versión nueva en segundo plano y ofrece
   reiniciar para aplicarla.

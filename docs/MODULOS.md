@@ -31,6 +31,10 @@ Todas las tablas replican la estructura e IDs del MySQL del sistema web (Laravel
 | Gestionar productos, marcas, categorías | ✔ | | | | ✔ |
 | Ajustar stock / stock mínimo | ✔ | | | | ✔ |
 | Ver kardex | ✔ | | ✔ | ✔ | ✔ |
+| Abrir / cerrar caja | ✔ | ✔ | | ✔ | |
+| Registrar ventas | ✔ | ✔ | | ✔ | |
+| Ver ventas e historial de turnos | ✔ | ✔ | ✔ | ✔ | |
+| Sincronizar con el central | ✔ | ✔ | | ✔ | ✔ |
 
 > **Por validar con el gerente:** en el web el módulo “producto” también lo ve el auditor (tipo 3). En el escritorio el auditor solo consulta (catálogo y kardex), no modifica.
 
@@ -96,16 +100,44 @@ Se puede volver a ejecutar: actualiza sin duplicar. Resultado con el `botica.sql
 
 ---
 
-## 5. Pruebas automatizadas
+## 5. Caja y ventas
 
-`npm test` → **87 pruebas, 87 OK**
+**Caja (turno):**
+- Un solo turno abierto por terminal; queda registrado quién lo abrió y lo cerró (sale de la sesión, no de la ventana).
+- Resumen en vivo: número de ventas, total vendido y total por medio de pago.
+- **Cuadre al cierre:** efectivo esperado = apertura + ventas en efectivo. Si lo contado no coincide, el sistema exige una observación y guarda la diferencia (sobrante / faltante). Historial de los últimos turnos.
+
+**Ventas:**
+- Comprobante **boleta o factura** con serie propia de la sucursal (`locals.serie` S19 → `B019` / `F019`) y correlativo único (`B019-00000001`). El correlativo se asigna en la misma transacción que descuenta el stock: o se registra todo o nada.
+- **Reglas SUNAT:** la factura exige un cliente con RUC; una boleta de S/ 700 o más exige identificar al cliente con su documento.
+- **IGV:** los precios del catálogo incluyen IGV. Se separan operación gravada, exonerada (productos con `status_igv = 0`) e IGV.
+- **Medios de pago:** efectivo (con monto recibido y vuelto), tarjeta, Yape, Plin, transferencia.
+- Precio, IGV y stock los calcula siempre el servidor; lo que mande la ventana se ignora.
+- Cliente por documento desde el punto de venta; si no existe, se registra ahí mismo sin salir de la venta.
+
+## 6. Sincronización
+
+- Una venta solo se marca como subida si el central responde 2xx con `ok`. Si no hay conexión o la rechaza, queda pendiente con el número de intentos y el último error, y se reintenta en la siguiente sincronización. **Ninguna venta se pierde.**
+- Timeout de 8 s por petición, sin sincronizaciones simultáneas, URL del central desde la configuración JSON (`centralUrl`).
+- Los precios del central solo se aplican a productos enlazados por `central_id` (antes podía pisar un producto local que coincidiera por id).
+- El servidor de prueba (`mock-central-server`) recibe las ventas de forma idempotente: un reintento no duplica la venta.
+
+## 7. Seguridad de la interfaz
+
+Content-Security-Policy estricta (solo scripts propios, sin `eval` ni scripts inline, sin marcos externos), `X-Content-Type-Options: nosniff` y `Referrer-Policy: no-referrer`.
+
+## 8. Pruebas automatizadas
+
+`npm test` → **108 pruebas, 108 OK**
 
 | Archivo | Qué cubre |
 |---|---|
 | `migraciones.test.js` (9) | esquema, IDs del web, migración de bases anteriores sin pérdida, llaves foráneas |
 | `auth.test.js` (21) | login, sesiones, expiración, bloqueo, hashes de Laravel, gestión de usuarios |
-| `api.test.js` (12) | HTTP: 401/403, suplantación, logout, JSON de errores |
+| `api.test.js` (13) | HTTP: 401/403, suplantación, logout, JSON de errores, cabeceras de seguridad |
 | `permisos.test.js` (6) | permisos por rol (vendedor, almacén, local), restablecer y cambiar contraseña |
 | `clientes.test.js` (15) | reglas SUNAT, RUC, duplicados, búsqueda, paginación |
 | `catalogo.test.js` (18) | fracciones, precios, marcas/categorías, ajustes, kardex, stock mínimo, ventas por caja/fracción |
 | `importacion.test.js` (6) | lector de MySQL, precios por zona, stock por sucursal, reimportación, fusión de duplicados |
+| `ventas.test.js` (15) | series y correlativos, factura con RUC, boleta ≥ S/ 700, IGV, vuelto, cuadre de caja, permisos por rol |
+| `sync.test.js` (5) | central caído, venta rechazada, venta aceptada, precios solo por `central_id`, sin reenvíos |

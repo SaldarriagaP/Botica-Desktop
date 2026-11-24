@@ -3,296 +3,635 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Desktop Botica</title>
+<title>Panel - Farmacia Solidaria</title>
+<!-- Mismas hojas de estilo que el sistema web (copiadas en vendor/) -->
+<link rel="stylesheet" href="vendor/css/bootstrap.min.css" />
+<link rel="stylesheet" href="vendor/css/bootstrap-reset.css" />
+<link rel="stylesheet" href="vendor/css/font-awesome.css" />
+<link rel="stylesheet" href="vendor/css/style.css" />
+<link rel="stylesheet" href="vendor/css/style-responsive.css" />
+<link rel="stylesheet" href="vendor/css/botica-ui.css" />
+<link rel="stylesheet" href="vendor/css/modal-header.css" />
+<link rel="stylesheet" href="vendor/css/ventas-pos.css" />
+<!-- Ajustes propios de la terminal de escritorio -->
 <link rel="stylesheet" href="style.css" />
 </head>
-<body class="cargando">
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <span class="login-brand-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
-        </span>
-        <span class="sidebar-brand-text">Desktop Botica<small>Terminal de sucursal</small></span>
+<body class="cargando-app">
+  <section id="container">
+    <!-- ======================= HEADER (igual que header.blade.php) ======================= -->
+    <header class="header white-bg">
+      <div class="sidebar-toggle-box">
+        <div class="fa fa-bars" id="btnToggleSidebar" title="Mostrar u ocultar el menú"></div>
       </div>
+      <a href="#" class="logo" data-ir="inicio">Panel De <span>Control</span></a>
+      <div class="top-nav">
+        <ul class="nav pull-right top-menu">
+          <li class="estado-terminal">
+            <button type="button" id="chipConexion" class="chip-estado" title="Conexión con el servidor central"><i class="fa fa-circle"></i> <span>Central</span></button>
+            <button type="button" id="chipCaja" class="chip-estado" title="Estado de la caja"><i class="fa fa-circle"></i> <span>Caja</span></button>
+            <button type="button" id="chipSync" class="chip-estado" title="Ventas pendientes de subir al central"><i class="fa fa-circle"></i> <span>Sincronización</span></button>
+          </li>
+          <li class="dropdown" id="menuUsuario">
+            <a class="dropdown-toggle" href="#" id="btnMenuUsuario">
+              <i class="fa fa-user"></i>
+              <span class="username" id="usuarioActual"></span>
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu extended logout">
+              <div class="log-arrow-up"></div>
+              <li class="menu-usuario-info"><span id="usuarioRol"></span><small id="usuarioLocal"></small></li>
+              <li><a href="#" id="btnMiPassword"><i class="fa fa-lock"></i> Cambiar clave</a></li>
+              <li><a href="#" id="btnLogout"><i class="fa fa-key"></i> Cerrar sesion</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </header>
 
-      <div class="sidebar-local">Sucursal<strong id="localActual">-</strong></div>
-
-      <nav id="tabs">
-        <button data-tab="catalogo" data-permiso="catalogo.ver">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 11h18"/><path d="M9 7V4.8A1.8 1.8 0 0 1 10.8 3h2.4A1.8 1.8 0 0 1 15 4.8V7"/></svg>
-          Catálogo
-        </button>
-        <button data-tab="clientes" data-permiso="clientes.ver">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.3" cy="9" r="2.5"/><path d="M15.6 14.3c2.6.4 4.7 2.6 4.7 5.7"/></svg>
-          Clientes
-        </button>
-        <button data-tab="usuarios" data-permiso="usuarios.gestionar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.8-3 8.3-7 9-4-.7-7-4.2-7-9V6l7-3z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
-          Usuarios
-        </button>
-        <button data-tab="caja">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><circle cx="12" cy="15" r="1.4"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
-          Caja
-        </button>
-        <button data-tab="ventas">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2.5 3h2.4l2.4 12.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21.5 8H6.2"/></svg>
-          Ventas
-        </button>
-        <button data-tab="sync">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.6-4.4M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.4M20 19v-4h-4"/></svg>
-          Sincronización
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">Desktop Botica · v0.3</div>
+    <!-- ======================= MENU LATERAL (igual que menu.blade.php) ======================= -->
+    <aside>
+      <div id="sidebar" class="nav-collapse">
+        <ul class="sidebar-menu" id="nav-accordion">
+          <li><a href="#" data-tab="inicio"><i class="fa fa-dashboard"></i> <span>Panel</span></a></li>
+          <li class="sub-menu">
+            <a href="#" class="dcjq-parent"><i class="fa fa-briefcase"></i> <span>Productos</span> <span class="dcjq-icon"></span></a>
+            <ul class="sub">
+              <li><a href="#" data-tab="productos" data-permiso="catalogo.ver">Productos</a></li>
+              <li><a href="#" data-tab="categorias" data-permiso="catalogo.ver">Categorias</a></li>
+              <li><a href="#" data-tab="laboratorios" data-permiso="catalogo.ver">Laboratorio</a></li>
+            </ul>
+          </li>
+          <li class="sub-menu">
+            <a href="#" class="dcjq-parent"><i class="fa fa-shopping-cart"></i> <span>Ventas</span> <span class="dcjq-icon"></span></a>
+            <ul class="sub">
+              <li><a href="#" data-tab="ventas" data-permiso="ventas.registrar">Punto de venta</a></li>
+              <li><a href="#" data-tab="caja" data-permiso="ventas.ver">Apertura / Cierre de caja</a></li>
+              <li><a href="#" data-tab="historial" data-permiso="ventas.ver">Ventas registradas</a></li>
+              <li><a href="#" data-tab="cajas" data-permiso="ventas.ver">Cajas</a></li>
+            </ul>
+          </li>
+          <li class="sub-menu">
+            <a href="#" class="dcjq-parent"><i class="fa fa-users"></i> <span>Clientes</span> <span class="dcjq-icon"></span></a>
+            <ul class="sub">
+              <li><a href="#" data-tab="clientes" data-permiso="clientes.ver">Clientes</a></li>
+            </ul>
+          </li>
+          <li class="sub-menu">
+            <a href="#" class="dcjq-parent"><i class="fa fa-user"></i> <span>Usuarios</span> <span class="dcjq-icon"></span></a>
+            <ul class="sub">
+              <li><a href="#" data-tab="usuarios" data-permiso="usuarios.gestionar">Usuarios</a></li>
+            </ul>
+          </li>
+          <li><a href="#" data-tab="sync"><i class="fa fa-refresh"></i> <span>Sincronización</span> <span class="menu-contador" id="menuSyncContador"></span></a></li>
+        </ul>
+        <div class="sidebar-terminal">
+          <i class="fa fa-desktop"></i>
+          <span>Terminal de sucursal<strong id="localActual">-</strong></span>
+        </div>
+      </div>
     </aside>
 
-    <div class="content-area">
-      <header class="topbar">
-        <h1 id="pageTitle">Catálogo</h1>
-        <div class="topbar-user">
-          <span id="usuarioActual"></span>
-          <button id="btnMiPassword" class="logout-btn" type="button" title="Cambiar mi contraseña">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3"/><path d="M17 6l3 3"/><path d="M15 8l2 2"/></svg>
-          </button>
-          <button id="btnLogout" class="logout-btn" type="button" title="Cerrar sesión">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-          </button>
+    <!-- ======================= CONTENIDO ======================= -->
+    <section id="main-content">
+      <section class="wrapper">
+
+        <!-- ===== PANEL (dashboard) ===== -->
+        <section id="tab-inicio" class="tab dashboard-page" hidden>
+          <div class="dashboard-hero">
+            <div class="dashboard-hero-copy">
+              <span class="dashboard-eyebrow">Panel de control</span>
+              <h1 id="inicioSaludo">Hola</h1>
+              <p>Resumen operativo de ventas, inventario y caja de esta sucursal. Si se cae internet sigue vendiendo aquí: las ventas se suben solas al sistema central cuando vuelva la conexión.</p>
+            </div>
+            <div class="dashboard-hero-meta">
+              <span id="inicioFecha"></span>
+              <strong id="inicioLocal">-</strong>
+              <small id="inicioModo">Terminal de sucursal</small>
+            </div>
+          </div>
+          <div class="row dashboard-kpis" id="inicioKpis"></div>
+          <div class="row">
+            <div class="col-lg-8">
+              <section class="panel dashboard-panel">
+                <div class="panel-heading"><span><i class="fa fa-bolt"></i> Accesos rapidos</span></div>
+                <div class="panel-body">
+                  <div class="dashboard-actions" id="accionesRapidas">
+                    <button type="button" class="dashboard-action btn-action-primary" data-ir="ventas" data-permiso="ventas.registrar"><i class="fa fa-plus-circle"></i> <strong>Nueva venta</strong></button>
+                    <button type="button" class="dashboard-action" data-ir="caja" data-permiso="caja.operar"><i class="fa fa-archive"></i> <strong>Caja</strong></button>
+                    <button type="button" class="dashboard-action" data-ir="productos" data-permiso="catalogo.ver"><i class="fa fa-medkit"></i> <strong>Productos</strong></button>
+                    <button type="button" class="dashboard-action" data-ir="clientes" data-permiso="clientes.ver"><i class="fa fa-users"></i> <strong>Clientes</strong></button>
+                    <button type="button" class="dashboard-action" data-ir="historial" data-permiso="ventas.ver"><i class="fa fa-book"></i> <strong>Ventas</strong></button>
+                    <button type="button" class="dashboard-action" data-ir="sync"><i class="fa fa-refresh"></i> <strong>Sincronizar</strong></button>
+                  </div>
+                </div>
+              </section>
+              <section class="panel dashboard-panel" id="inicioVentasPanel">
+                <div class="panel-heading">
+                  <span><i class="fa fa-clock-o"></i> Ultimas ventas</span>
+                  <button type="button" class="btn btn-xs btn-default" data-ir="historial">Ver ventas</button>
+                </div>
+                <div class="panel-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover dashboard-table">
+                      <thead><tr><th>Comprobante</th><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th class="text-right">Total</th><th class="text-center">Central</th></tr></thead>
+                      <tbody id="inicioVentas"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <div class="col-lg-4">
+              <section class="panel dashboard-panel">
+                <div class="panel-heading"><span><i class="fa fa-heartbeat"></i> Salud operativa</span></div>
+                <div class="panel-body" id="inicioSalud"></div>
+              </section>
+              <section class="panel dashboard-panel">
+                <div class="panel-heading"><span><i class="fa fa-check-circle"></i> Tareas sugeridas</span></div>
+                <div class="panel-body"><ul class="dashboard-task-list" id="inicioTareas"></ul></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PRODUCTOS ===== -->
+        <section id="tab-productos" class="tab product-list-page" hidden>
+          <ul class="breadcrumb"><li><a href="#" data-ir="inicio"><i class="fa fa-home"></i> Panel</a></li><li class="active">Productos</li></ul>
+          <section class="dashboard-hero producto-hero">
+            <div class="producto-hero-row">
+              <h1>Listado de productos</h1>
+              <div class="dashboard-actions">
+                <button type="button" class="dashboard-action dashboard-action-button product-btn-new" id="btnNuevoProducto" data-permiso="catalogo.gestionar"><i class="fa fa-plus-circle"></i> <strong>Nuevo</strong></button>
+              </div>
+            </div>
+          </section>
+          <div class="activo-kpis producto-kpis" id="prodKpis"></div>
+          <section class="panel product-list-panel">
+            <header class="panel-heading product-panel-heading">
+              <span><i class="fa fa-medkit"></i> Productos</span>
+              <div class="filtros-panel">
+                <select id="catFiltroCategoria" class="form-control input-sm" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+                <select id="catFiltroMarca" class="form-control input-sm" aria-label="Laboratorio"><option value="">Todos los laboratorios</option></select>
+                <select id="catFiltroStock" class="form-control input-sm" aria-label="Stock">
+                  <option value="">Todo el stock</option>
+                  <option value="con">Con stock</option>
+                  <option value="bajo">Stock bajo el mínimo</option>
+                  <option value="sin">Sin stock</option>
+                </select>
+                <label class="check-inline"><input type="checkbox" id="catSoloActivos" checked /> Solo activos</label>
+              </div>
+            </header>
+            <div class="panel-body">
+              <div class="botica-dt-toolbar">
+                <div class="dataTables_length"><label>Mostrar <select id="catPorPagina"><option>10</option><option selected>25</option><option>50</option><option>100</option></select> registros</label></div>
+                <div class="dataTables_filter"><label>Buscar: <input type="search" id="catBuscar" placeholder="Nombre, composición, laboratorio o código" /></label></div>
+              </div>
+              <div class="table-responsive">
+                <table id="catalogoTabla" class="table table-striped table-advance table-hover category-table product-table">
+                  <thead><tr>
+                    <th>ID</th><th>Producto</th><th>Composicion</th><th>Presentacion</th><th>Laboratorio</th><th>Codigo Barras</th>
+                    <th>Fraccion</th><th>Precio Unidad</th><th>Precio Fraccion</th><th>Stock</th><th>Estado</th><th>Acciones</th>
+                  </tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="tabla-pie" id="catPaginador"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ===== CATEGORIAS ===== -->
+        <section id="tab-categorias" class="tab category-list-page" hidden>
+          <ul class="breadcrumb"><li><a href="#" data-ir="inicio"><i class="fa fa-home"></i> Panel</a></li><li><a href="#" data-ir="productos">Productos</a></li><li class="active">Categorias</li></ul>
+          <section class="dashboard-hero producto-hero">
+            <div class="producto-hero-row">
+              <h1>Categorias de productos</h1>
+              <div class="dashboard-actions">
+                <button type="button" class="dashboard-action dashboard-action-button product-btn-new" data-nuevo-maestro="categorias" data-permiso="catalogo.gestionar"><i class="fa fa-plus-circle"></i> <strong>Nueva categoria</strong></button>
+              </div>
+            </div>
+          </section>
+          <div class="activo-kpis categoria-kpis" id="catKpis"></div>
+          <section class="panel product-list-panel">
+            <header class="panel-heading product-panel-heading"><span><i class="fa fa-tags"></i> Categorias</span></header>
+            <div class="panel-body">
+              <div class="botica-dt-toolbar">
+                <div class="dataTables_length"><label>Mostrar <select data-maestro-por-pagina="categorias"><option>10</option><option selected>25</option><option>50</option><option>100</option></select> registros</label></div>
+                <div class="dataTables_filter"><label>Buscar: <input type="search" data-maestro-buscar="categorias" /></label></div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped table-advance table-hover category-table">
+                  <thead><tr><th>Categoria</th><th class="text-center">Productos</th><th>Creacion</th><th>Ultima edicion</th><th>Acciones</th></tr></thead>
+                  <tbody id="categoriasTabla"></tbody>
+                </table>
+              </div>
+              <div class="tabla-pie" id="categoriasPaginador"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ===== LABORATORIOS (marcas) ===== -->
+        <section id="tab-laboratorios" class="tab category-list-page" hidden>
+          <ul class="breadcrumb"><li><a href="#" data-ir="inicio"><i class="fa fa-home"></i> Panel</a></li><li><a href="#" data-ir="productos">Productos</a></li><li class="active">Laboratorio</li></ul>
+          <section class="dashboard-hero producto-hero">
+            <div class="producto-hero-row">
+              <h1>Laboratorios</h1>
+              <div class="dashboard-actions">
+                <button type="button" class="dashboard-action dashboard-action-button product-btn-new" data-nuevo-maestro="marcas" data-permiso="catalogo.gestionar"><i class="fa fa-plus-circle"></i> <strong>Nuevo laboratorio</strong></button>
+              </div>
+            </div>
+          </section>
+          <div class="activo-kpis categoria-kpis" id="marKpis"></div>
+          <section class="panel product-list-panel">
+            <header class="panel-heading product-panel-heading"><span><i class="fa fa-flask"></i> Laboratorios</span></header>
+            <div class="panel-body">
+              <div class="botica-dt-toolbar">
+                <div class="dataTables_length"><label>Mostrar <select data-maestro-por-pagina="marcas"><option>10</option><option selected>25</option><option>50</option><option>100</option></select> registros</label></div>
+                <div class="dataTables_filter"><label>Buscar: <input type="search" data-maestro-buscar="marcas" /></label></div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped table-advance table-hover category-table">
+                  <thead><tr><th>Laboratorio</th><th class="text-center">Productos</th><th>Creacion</th><th>Ultima edicion</th><th>Acciones</th></tr></thead>
+                  <tbody id="marcasTabla"></tbody>
+                </table>
+              </div>
+              <div class="tabla-pie" id="marcasPaginador"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ===== CLIENTES ===== -->
+        <section id="tab-clientes" class="tab" hidden>
+          <ul class="breadcrumb"><li><a href="#" data-ir="inicio"><i class="fa fa-home"></i> Panel</a></li><li class="active">Clientes</li></ul>
+          <section class="dashboard-hero producto-hero">
+            <div class="producto-hero-row">
+              <h1>Clientes</h1>
+              <div class="dashboard-actions">
+                <button type="button" class="dashboard-action dashboard-action-button product-btn-new" id="btnNuevoCliente" data-permiso="clientes.crear"><i class="fa fa-plus-circle"></i> <strong>Nuevo cliente</strong></button>
+              </div>
+            </div>
+          </section>
+          <div class="activo-kpis clientes-reporte-kpis" id="cliKpis"></div>
+          <section class="panel product-list-panel">
+            <header class="panel-heading product-panel-heading">
+              <span><i class="fa fa-users"></i> Clientes</span>
+              <div class="filtros-panel"><label class="check-inline"><input type="checkbox" id="cliSoloActivos" checked /> Solo activos</label></div>
+            </header>
+            <div class="panel-body">
+              <div class="botica-dt-toolbar">
+                <div class="dataTables_length"><label>Mostrar <select id="cliPorPagina"><option>10</option><option selected>25</option><option>50</option><option>100</option></select> registros</label></div>
+                <div class="dataTables_filter"><label>Buscar: <input type="search" id="cliBuscar" placeholder="Nombre, razón social, DNI o RUC" /></label></div>
+              </div>
+              <div class="table-responsive">
+                <table id="clienteTabla" class="table table-striped table-advance table-hover category-table">
+                  <thead><tr><th>ID</th><th>Tipo de cliente</th><th>Razon / Nombre</th><th>RUC / DNI</th><th>Contacto</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="tabla-pie" id="cliPaginador"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ===== USUARIOS ===== -->
+        <section id="tab-usuarios" class="tab" hidden>
+          <ul class="breadcrumb"><li><a href="#" data-ir="inicio"><i class="fa fa-home"></i> Panel</a></li><li class="active">Usuarios</li></ul>
+          <section class="dashboard-hero producto-hero">
+            <div class="producto-hero-row">
+              <h1>Usuarios</h1>
+              <div class="dashboard-actions">
+                <button type="button" class="dashboard-action dashboard-action-button product-btn-new" id="btnNuevoUsuario"><i class="fa fa-plus-circle"></i> <strong>Nuevo usuario</strong></button>
+              </div>
+            </div>
+          </section>
+          <div class="activo-kpis usuario-kpis" id="usuKpis"></div>
+          <section class="panel product-list-panel">
+            <header class="panel-heading product-panel-heading"><span>Usuarios</span></header>
+            <div class="panel-body">
+              <div class="botica-dt-toolbar">
+                <div class="dataTables_length"><label>Mostrar <select id="usuPorPagina"><option selected>10</option><option>25</option><option>50</option><option>100</option></select> registros</label></div>
+                <div class="dataTables_filter"><label>Buscar: <input type="search" id="usuBuscar" /></label></div>
+              </div>
+              <div class="table-responsive">
+                <table id="usuarioTabla" class="table table-striped table-advance table-hover category-table">
+                  <thead><tr>
+                    <th><i class="fa fa-credit-card"></i> DNI</th><th><i class="fa fa-users"></i> Username</th><th><i class="fa fa-user-md"></i> Tipo</th>
+                    <th><i class="fa fa-user"></i> Nombre</th><th><i class="fa fa-flag"></i> Estado</th><th><i class="fa fa-calendar"></i> Creacion</th>
+                    <th><i class="fa fa-map-marker"></i> Local</th><th>Acciones</th>
+                  </tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="tabla-pie" id="usuPaginador"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ===== CAJA, VENTAS, HISTORIAL, CAJAS, SYNC (vistas en views/) ===== -->
+        <section id="tab-caja" class="tab caja-page" hidden data-vista="caja"></section>
+        <section id="tab-ventas" class="tab" hidden data-vista="ventas"></section>
+        <section id="tab-historial" class="tab" hidden data-vista="historial"></section>
+        <section id="tab-cajas" class="tab" hidden data-vista="cajas"></section>
+        <section id="tab-sync" class="tab" hidden data-vista="sync"></section>
+      </section>
+    </section>
+  </section>
+
+  <!-- ======================= MODALES (mismo estilo que modal-header.css del web) ======================= -->
+  <dialog id="dlgProducto" class="botica-panel-modal dlg-lg">
+    <form class="modal-content" id="productoForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Catalogo</span><h4 class="modal-title" id="productoFormTitulo">Nuevo Producto</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="productoId" />
+        <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="pNombre">Nombre</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-briefcase"></i></span><input id="pNombre" class="form-control" maxlength="255" placeholder="Ingresar nombre" /></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pComposicion">Composicion</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-flask"></i></span><input id="pComposicion" class="form-control" maxlength="100" placeholder="Ingresar la composicion" /></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pPresentacion">Presentacion</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-tag"></i></span><input id="pPresentacion" class="form-control" maxlength="45" placeholder="Ingresar la presentacion" /></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pFormaFarm">Forma farmacéutica</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-tag"></i></span><input id="pFormaFarm" class="form-control" maxlength="45" list="formasFarm" placeholder="Ingresar la forma farmacéutica" /></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pBarras">Codigo de barras</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-barcode"></i></span><input id="pBarras" class="form-control" maxlength="20" placeholder="Ingresar codigo" /></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pMarca">Laboratorio</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-truck"></i></span><select id="pMarca" class="form-control"></select></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="pCategoria">Categoria</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-thumb-tack"></i></span><select id="pCategoria" class="form-control"></select></div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label>Fraccion</label>
+            <div class="radios">
+              <label><input type="radio" name="pFracciona" value="0" checked /> No Fraccionable</label>
+              <label><input type="radio" name="pFracciona" value="1" /> Fraccionable</label>
+            </div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label>Igv</label>
+            <div class="radios">
+              <label><input type="radio" name="pIgv" value="1" checked /> Afectado</label>
+              <label><input type="radio" name="pIgv" value="0" /> Inafectado</label>
+            </div>
+          </div>
+          <div class="col-md-6 form-group" id="pEstadoCampo">
+            <label>Estado</label>
+            <div class="radios">
+              <label><input type="radio" name="pEstado" value="1" checked /> Activo</label>
+              <label><input type="radio" name="pEstado" value="0" /> Inactivo</label>
+            </div>
+          </div>
         </div>
-      </header>
-
-      <main>
-        <!-- ======================= CATALOGO ======================= -->
-        <section id="tab-catalogo" class="tab" style="display:none">
-          <div class="tabs-mini" id="catalogoSubtabs">
-            <button type="button" data-sub="productos" class="activo">Productos</button>
-            <button type="button" data-sub="nuevo" data-permiso="catalogo.gestionar">Nuevo producto</button>
-            <button type="button" data-sub="maestros" data-permiso="catalogo.gestionar">Marcas y categorías</button>
+        <div class="form-seccion-titulo"><i class="fa fa-money"></i> Precios y fraccionamiento</div>
+        <div class="row">
+          <div class="col-md-4 form-group">
+            <label for="pPrecioCompra">Precio de compra</label>
+            <div class="input-group"><span class="input-group-addon">S/</span><input id="pPrecioCompra" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" /></div>
           </div>
-
-          <div class="card" data-subpanel="productos">
-            <div class="toolbar">
-              <input type="search" id="catBuscar" placeholder="Buscar por nombre, composición, laboratorio o código de barras..." />
-              <select id="catFiltroCategoria" aria-label="Categoría"><option value="">Todas las categorías</option></select>
-              <select id="catFiltroMarca" aria-label="Marca"><option value="">Todos los laboratorios</option></select>
-              <select id="catFiltroStock" aria-label="Stock">
-                <option value="">Todo el stock</option>
-                <option value="con">Con stock</option>
-                <option value="bajo">Stock bajo el mínimo</option>
-                <option value="sin">Sin stock</option>
-              </select>
-              <label class="check"><input type="checkbox" id="catSoloActivos" checked /> Solo activos</label>
-            </div>
-            <table id="catalogoTabla">
-              <thead><tr>
-                <th>Producto</th><th>Laboratorio / categoría</th><th class="num">P. caja</th><th class="num">P. fracción</th>
-                <th>Stock</th><th>Estado</th><th>Acciones</th>
-              </tr></thead>
-              <tbody></tbody>
-            </table>
-            <div class="paginador" id="catPaginador"></div>
+          <div class="col-md-4 form-group">
+            <label for="pPrecioUnidad">Precio unidad (caja)</label>
+            <div class="input-group"><span class="input-group-addon">S/</span><input id="pPrecioUnidad" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" /></div>
           </div>
-
-          <div class="card" data-subpanel="nuevo" style="display:none">
-            <div class="card-head"><h2 id="productoFormTitulo">Nuevo producto</h2></div>
-            <form id="productoForm" class="form-grid" novalidate>
-              <input type="hidden" id="productoId" />
-              <label class="campo ancho">Nombre del producto *<input id="pNombre" placeholder="Ej. PARACETAMOL 500MG CJA X 100 TAB" maxlength="255" /></label>
-              <label class="campo">Laboratorio / marca *<select id="pMarca"></select></label>
-              <label class="campo">Categoría *<select id="pCategoria"></select></label>
-              <label class="campo ancho">Composición *<input id="pComposicion" placeholder="Ej. PARACETAMOL 500MG" maxlength="100" /></label>
-              <label class="campo">Presentación *<input id="pPresentacion" placeholder="Ej. CJA X 100 TAB" maxlength="45" /></label>
-              <label class="campo">Forma farmacéutica *<input id="pFormaFarm" placeholder="Ej. TABLETAS" maxlength="45" list="formasFarm" /></label>
-              <label class="campo">Código de barras<input id="pBarras" maxlength="20" /></label>
-              <label class="campo">Precio de compra (S/)<input id="pPrecioCompra" type="number" step="0.01" min="0" /></label>
-              <label class="campo">Precio de venta caja / unidad (S/)<input id="pPrecioUnidad" type="number" step="0.01" min="0" /></label>
-              <label class="check"><input type="checkbox" id="pSeFracciona" /> Se vende por unidad suelta (fracción)</label>
-              <label class="campo">Unidades por caja<input id="pFraccion" type="number" step="1" min="2" disabled /></label>
-              <label class="campo">Precio por unidad suelta (S/)<input id="pPrecioFraccion" type="number" step="0.01" min="0" disabled /></label>
-              <label class="check"><input type="checkbox" id="pIgv" checked /> Afecto a IGV</label>
-              <label class="campo" id="pStockMinimoCampo">Stock mínimo (unidades mínimas de venta)<input id="pStockMinimo" type="number" step="1" min="0" value="0" /></label>
-              <div class="form-actions">
-                <button id="btnGuardarProducto" type="submit">Guardar producto</button>
-                <button id="btnCancelarProducto" class="secundario" type="button">Cancelar</button>
-                <span id="productoMsg"></span>
-              </div>
-            </form>
-            <div id="productoAviso" class="aviso"></div>
-            <datalist id="formasFarm">
-              <option value="TABLETAS"></option><option value="CAPSULAS"></option><option value="JARABE"></option>
-              <option value="SUSPENSION"></option><option value="SOLUCION INYECTABLE"></option><option value="CREMA"></option>
-              <option value="GOTAS"></option><option value="OVULOS"></option><option value="POLVO"></option>
-            </datalist>
+          <div class="col-md-4 form-group" id="pStockMinimoCampo">
+            <label for="pStockMinimo">Stock mínimo</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-bell"></i></span><input id="pStockMinimo" class="form-control" type="number" step="1" min="0" value="0" /></div>
           </div>
-
-          <div class="card" data-subpanel="maestros" style="display:none">
-            <div class="maestros">
-              <div>
-                <h3>Laboratorios / marcas</h3>
-                <form id="marcaForm" class="inline-form"><input id="marcaNombre" placeholder="Nueva marca" maxlength="100" /><button type="submit">Agregar</button></form>
-                <p id="marcaMsg"></p>
-                <input type="search" id="marcaBuscar" placeholder="Filtrar..." />
-                <ul id="marcaLista"></ul>
-              </div>
-              <div>
-                <h3>Categorías</h3>
-                <form id="categoriaForm" class="inline-form"><input id="categoriaNombre" placeholder="Nueva categoría" maxlength="100" /><button type="submit">Agregar</button></form>
-                <p id="categoriaMsg"></p>
-                <input type="search" id="categoriaBuscar" placeholder="Filtrar..." />
-                <ul id="categoriaLista"></ul>
-              </div>
-            </div>
+          <div class="col-md-4 form-group campo-fraccion">
+            <label for="pFraccion">Unidades por caja</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-th-large"></i></span><input id="pFraccion" class="form-control" type="number" step="1" min="2" placeholder="Ej. 100" /></div>
           </div>
-        </section>
-
-        <!-- ======================= CLIENTES ======================= -->
-        <section id="tab-clientes" class="tab" style="display:none">
-          <div class="card">
-            <div class="toolbar">
-              <input type="search" id="cliBuscar" placeholder="Buscar por nombre o número de documento..." />
-              <label class="check"><input type="checkbox" id="cliSoloActivos" checked /> Solo activos</label>
-              <span class="spacer"></span>
-              <button type="button" id="btnNuevoCliente" data-permiso="clientes.crear">+ Nuevo cliente</button>
-            </div>
-            <table id="clienteTabla">
-              <thead><tr><th>Cliente</th><th>Documento</th><th>Tipo</th><th>Contacto</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody></tbody>
-            </table>
-            <div class="paginador" id="cliPaginador"></div>
+          <div class="col-md-4 form-group campo-fraccion">
+            <label for="pPrecioFraccion">Precio fraccion</label>
+            <div class="input-group"><span class="input-group-addon">S/</span><input id="pPrecioFraccion" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" /></div>
           </div>
-        </section>
+        </div>
+        <div id="productoAviso" class="alert alert-warning" hidden></div>
+        <div id="productoMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-info" id="btnGuardarProducto"><i class="fa fa-check"></i> Crear</button>
+      </div>
+    </form>
+    <datalist id="formasFarm">
+      <option value="TABLETAS"></option><option value="CAPSULAS"></option><option value="JARABE"></option>
+      <option value="SUSPENSION"></option><option value="SOLUCION INYECTABLE"></option><option value="CREMA"></option>
+      <option value="GOTAS"></option><option value="OVULOS"></option><option value="POLVO"></option>
+    </datalist>
+  </dialog>
 
-        <!-- ======================= USUARIOS ======================= -->
-        <section id="tab-usuarios" class="tab" style="display:none" data-permiso="usuarios.gestionar">
-          <div class="card">
-            <div class="toolbar">
-              <h2 style="margin:0">Usuarios de la terminal</h2>
-              <span class="spacer"></span>
-              <button type="button" id="btnNuevoUsuario">+ Nuevo usuario</button>
-            </div>
-            <table id="usuarioTabla">
-              <thead><tr><th>Usuario</th><th>Nombre</th><th>DNI</th><th>Rol</th><th>Sucursal</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody></tbody>
-            </table>
-            <p id="usuarioMsg"></p>
-          </div>
-        </section>
+  <dialog id="dlgStock" class="botica-panel-modal">
+    <form class="modal-content" id="stockForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Inventario</span><h4 class="modal-title">Ajuste de stock</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="sProductoId" />
+        <div class="dlg-producto"><strong id="sProductoNombre"></strong><small id="sStockActual"></small></div>
+        <div class="form-group">
+          <label for="sTipo">Tipo de ajuste</label>
+          <select id="sTipo" class="form-control"><option value="entrada">Entrada (ingreso, conteo a favor)</option><option value="salida">Salida (merma, vencimiento, conteo en contra)</option></select>
+        </div>
+        <div class="row">
+          <div class="col-6 form-group" id="sCajasCampo"><label for="sCajas" id="sCajasLabel">Cajas</label><input id="sCajas" class="form-control" type="number" min="0" step="1" value="0" /></div>
+          <div class="col-6 form-group" id="sSueltasCampo"><label for="sSueltas">Unidades sueltas</label><input id="sSueltas" class="form-control" type="number" min="0" step="1" value="0" /></div>
+        </div>
+        <div class="form-group"><label for="sMotivo">Motivo</label><input id="sMotivo" class="form-control" maxlength="200" placeholder="Ej. Ingreso guía 001-2345 / Vencimiento lote X" /></div>
+        <div class="form-group"><label for="sMinimo">Stock mínimo (unidades mínimas de venta)</label><input id="sMinimo" class="form-control" type="number" min="0" step="1" /></div>
+        <div id="stockMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cerrar</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Registrar ajuste</button>
+      </div>
+    </form>
+  </dialog>
 
-        <!-- ======================= CAJA / VENTAS / SYNC ======================= -->
-        <section id="tab-caja" class="tab" style="display:none" data-vista="caja"></section>
-        <section id="tab-ventas" class="tab" style="display:none" data-vista="ventas"></section>
-        <section id="tab-sync" class="tab" style="display:none" data-vista="sync"></section>
-      </main>
+  <dialog id="dlgKardex" class="botica-panel-modal dlg-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Historial del producto</span><h4 class="modal-title" id="kTitulo">Kardex</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table id="kardexTabla" class="table table-striped table-hover category-table">
+            <thead><tr><th>Fecha</th><th>Movimiento</th><th class="text-right">Cantidad</th><th class="text-right">Saldo</th><th>Detalle</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="tabla-pie" id="kPaginador"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-default" data-cerrar>Cerrar</button></div>
     </div>
+  </dialog>
+
+  <dialog id="dlgCliente" class="botica-panel-modal">
+    <form class="modal-content" id="clienteForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Clientes</span><h4 class="modal-title" id="dlgClienteTitulo">Nuevo cliente</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="clienteId" />
+        <div class="row">
+          <div class="col-md-6 form-group"><label for="cTipoDoc">Tipo de documento</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-list-alt"></i></span><select id="cTipoDoc" class="form-control"></select></div></div>
+          <div class="col-md-6 form-group"><label for="cCode">Numero de documento</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-credit-card"></i></span><input id="cCode" class="form-control" maxlength="11" autocomplete="off" /></div></div>
+        </div>
+        <div id="cDocAviso" class="alert alert-warning" hidden></div>
+        <div class="form-group"><label for="cNombre">Nombre o razon social</label>
+          <div class="input-group"><span class="input-group-addon"><i class="fa fa-user"></i></span><input id="cNombre" class="form-control" maxlength="255" placeholder="Ingresar nombres y apellidos o razon social" /></div></div>
+        <div class="form-group"><label for="cDireccion">Direccion</label>
+          <div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span><input id="cDireccion" class="form-control" maxlength="200" placeholder="Ingresar direccion" /></div></div>
+        <div class="row">
+          <div class="col-md-6 form-group"><label for="cTelefono">Telefono</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-phone"></i></span><input id="cTelefono" class="form-control" inputmode="numeric" maxlength="9" placeholder="Ingresar celular" /></div></div>
+          <div class="col-md-6 form-group"><label for="cEmail">Correo</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-envelope"></i></span><input id="cEmail" class="form-control" type="email" placeholder="Ingresar correo" /></div></div>
+        </div>
+        <div id="clienteMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-info" id="btnGuardarCliente"><i class="fa fa-check"></i> Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgUsuario" class="botica-panel-modal dlg-lg">
+    <form class="modal-content" id="usuarioForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Administracion</span><h4 class="modal-title" id="dlgUsuarioTitulo">Nuevo Usuario</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="uId" />
+        <div class="row">
+          <div class="col-md-6 form-group"><label for="uDni">DNI</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-credit-card"></i></span><input id="uDni" class="form-control" inputmode="numeric" maxlength="8" placeholder="Ingresar DNI" /></div></div>
+          <div class="col-md-6 form-group"><label for="uEmail">Correo</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-envelope"></i></span><input id="uEmail" class="form-control" type="email" placeholder="Ingresar correo" /></div></div>
+          <div class="col-md-6 form-group"><label for="uFirstname">Nombres</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-user"></i></span><input id="uFirstname" class="form-control" maxlength="60" placeholder="Ingresar nombres" /></div></div>
+          <div class="col-md-6 form-group"><label for="uLastname">Apellidos</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-user"></i></span><input id="uLastname" class="form-control" maxlength="60" placeholder="Ingresar apellidos" /></div></div>
+          <div class="col-md-6 form-group"><label for="uUsername">Usuario</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-users"></i></span><input id="uUsername" class="form-control" maxlength="30" autocomplete="off" placeholder="Ej. JPEREZ1" /></div></div>
+          <div class="col-md-6 form-group"><label for="uPhone">Nro. de celular</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-phone"></i></span><input id="uPhone" class="form-control" inputmode="numeric" maxlength="9" placeholder="Ingresar numero de celular" /></div></div>
+          <div class="col-md-6 form-group" id="uPasswordCampo"><label for="uPassword">Contrasena</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-lock"></i></span><input id="uPassword" class="form-control" type="password" autocomplete="new-password" placeholder="Ingresar contrasena (min. 6)" /></div></div>
+          <div class="col-md-6 form-group"><label for="uTipo">Tipo</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-user-md"></i></span><select id="uTipo" class="form-control"></select></div></div>
+          <div class="col-md-6 form-group"><label for="uLocal">Local</label>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span><select id="uLocal" class="form-control"></select></div></div>
+        </div>
+        <div id="uMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-info"><i class="fa fa-check"></i> Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgReset" class="botica-panel-modal">
+    <form class="modal-content" id="resetForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Usuarios</span><h4 class="modal-title">Restablecer contraseña</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="rId" />
+        <p>Asigna una contraseña temporal a <strong id="rNombre"></strong>. Deberá cambiarla la próxima vez que inicie sesión y se cerrarán sus sesiones abiertas.</p>
+        <div class="form-group"><label for="rPassword">Contraseña temporal (mín. 6)</label>
+          <div class="input-group"><span class="input-group-addon"><i class="fa fa-lock"></i></span><input id="rPassword" class="form-control" type="text" autocomplete="off" /></div></div>
+        <div id="rMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-warning"><i class="fa fa-key"></i> Restablecer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgMaestro" class="botica-panel-modal">
+    <form class="modal-content" id="maestroForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Catalogo</span><h4 class="modal-title" id="mTitulo">Nueva categoria</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="mId" /><input type="hidden" id="mRuta" />
+        <div class="form-group"><label for="mNombre" id="mEtiqueta">Nombre</label>
+          <div class="input-group"><span class="input-group-addon"><i class="fa fa-tag"></i></span><input id="mNombre" class="form-control" maxlength="100" /></div></div>
+        <div id="mMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-info"><i class="fa fa-check"></i> Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgMiPassword" class="botica-panel-modal">
+    <form class="modal-content" id="miPasswordForm" novalidate>
+      <div class="modal-header">
+        <div><span class="modal-eyebrow">Mi cuenta</span><h4 class="modal-title">Cambiar mi clave</h4></div>
+        <button type="button" class="close" data-cerrar>&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label for="mpActual">Clave actual</label><input id="mpActual" class="form-control" type="password" autocomplete="current-password" /></div>
+        <div class="form-group"><label for="mpNueva">Nueva clave (mín. 6)</label><input id="mpNueva" class="form-control" type="password" autocomplete="new-password" /></div>
+        <div class="form-group"><label for="mpNueva2">Repite la nueva clave</label><input id="mpNueva2" class="form-control" type="password" autocomplete="new-password" /></div>
+        <div id="mpMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Cambiar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Confirmacion y avisos con el aspecto de SweetAlert2 (como botica-swal.js del web) -->
+  <dialog id="dlgConfirmar" class="swal-dlg">
+    <form method="dialog">
+      <div class="swal-icono" id="cfIcono"><i class="fa fa-exclamation"></i></div>
+      <h2 id="cfTitulo">¿Confirmar?</h2>
+      <p id="cfTexto"></p>
+      <div class="swal-acciones">
+        <button value="si" id="cfAceptar" class="btn btn-primary">Confirmar</button>
+        <button value="no" id="cfCancelar" class="btn btn-default">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Indicador global de carga: aparece si una operacion demora -->
+  <div id="cargaGlobal" class="carga-global" hidden aria-live="polite">
+    <div class="carga-caja"><i class="fa fa-spinner fa-spin"></i><span id="cargaTexto">Cargando...</span></div>
   </div>
 
-  <!-- ======================= DIALOGOS ======================= -->
-  <dialog id="dlgCliente">
-    <div class="dlg-head"><h2 id="dlgClienteTitulo">Nuevo cliente</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="clienteForm" novalidate>
-      <input type="hidden" id="clienteId" />
-      <div class="fila-2">
-        <label class="campo">Tipo de documento<select id="cTipoDoc"></select></label>
-        <label class="campo">Número de documento<input id="cCode" maxlength="11" autocomplete="off" /></label>
-      </div>
-      <div id="cDocAviso" class="aviso"></div>
-      <label class="campo">Nombre o razón social *<input id="cNombre" maxlength="255" /></label>
-      <label class="campo">Dirección<input id="cDireccion" maxlength="200" /></label>
-      <div class="fila-2">
-        <label class="campo">Teléfono<input id="cTelefono" inputmode="numeric" maxlength="9" /></label>
-        <label class="campo">Email<input id="cEmail" type="email" /></label>
-      </div>
-      <p id="clienteMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit" id="btnGuardarCliente">Guardar</button></div>
-    </form>
-  </dialog>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <!-- Comprobantes y reportes de caja para imprimir -->
+  <div id="zonaImpresion" aria-hidden="true"></div>
 
-  <dialog id="dlgStock">
-    <div class="dlg-head"><h2>Ajuste de stock</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="stockForm" novalidate>
-      <input type="hidden" id="sProductoId" />
-      <p><strong id="sProductoNombre"></strong><span class="sub" id="sStockActual"></span></p>
-      <label class="campo">Tipo de ajuste<select id="sTipo"><option value="entrada">Entrada (ingreso, conteo a favor)</option><option value="salida">Salida (merma, vencimiento, conteo en contra)</option></select></label>
-      <div class="fila-2">
-        <label class="campo" id="sCajasCampo">Cajas<input id="sCajas" type="number" min="0" step="1" value="0" /></label>
-        <label class="campo" id="sSueltasCampo">Unidades sueltas<input id="sSueltas" type="number" min="0" step="1" value="0" /></label>
-      </div>
-      <label class="campo">Motivo *<input id="sMotivo" maxlength="200" placeholder="Ej. Ingreso guía 001-2345 / Vencimiento lote X" /></label>
-      <label class="campo">Stock mínimo (unidades mínimas de venta)<input id="sMinimo" type="number" min="0" step="1" /></label>
-      <p id="stockMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cerrar</button><button type="submit">Registrar ajuste</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="dlgKardex" class="ancho">
-    <div class="dlg-head"><h2 id="kTitulo">Kardex</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <div class="dlg-body">
-      <table id="kardexTabla"><thead><tr><th>Fecha</th><th>Movimiento</th><th class="num">Cantidad</th><th class="num">Saldo</th><th>Detalle</th></tr></thead><tbody></tbody></table>
-      <div class="paginador" id="kPaginador"></div>
-    </div>
-  </dialog>
-
-  <dialog id="dlgUsuario">
-    <div class="dlg-head"><h2 id="dlgUsuarioTitulo">Nuevo usuario</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="usuarioForm" novalidate>
-      <input type="hidden" id="uId" />
-      <div class="fila-2">
-        <label class="campo">Usuario<input id="uUsername" placeholder="Ej. JPEREZ1" maxlength="30" autocomplete="off" /></label>
-        <label class="campo" id="uPasswordCampo">Contraseña (mín. 6)<input id="uPassword" type="password" autocomplete="new-password" /></label>
-      </div>
-      <div class="fila-2">
-        <label class="campo">Nombres *<input id="uFirstname" maxlength="60" /></label>
-        <label class="campo">Apellidos<input id="uLastname" maxlength="60" /></label>
-      </div>
-      <div class="fila-2">
-        <label class="campo">DNI *<input id="uDni" inputmode="numeric" maxlength="8" /></label>
-        <label class="campo">Teléfono<input id="uPhone" inputmode="numeric" maxlength="9" /></label>
-      </div>
-      <label class="campo">Email<input id="uEmail" type="email" /></label>
-      <div class="fila-2">
-        <label class="campo">Rol<select id="uTipo"></select></label>
-        <label class="campo">Sucursal<select id="uLocal"></select></label>
-      </div>
-      <p id="uMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Guardar</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="dlgReset">
-    <div class="dlg-head"><h2>Restablecer contraseña</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="resetForm" novalidate>
-      <input type="hidden" id="rId" />
-      <p>Asigna una contraseña temporal a <strong id="rNombre"></strong>. Deberá cambiarla la próxima vez que inicie sesión y se cerrarán sus sesiones abiertas.</p>
-      <label class="campo">Contraseña temporal (mín. 6)<input id="rPassword" type="text" autocomplete="off" /></label>
-      <p id="rMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Restablecer</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="dlgRenombrar">
-    <div class="dlg-head"><h2 id="rnTitulo">Renombrar</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="renombrarForm" novalidate>
-      <input type="hidden" id="rnId" /><input type="hidden" id="rnRuta" />
-      <label class="campo">Nuevo nombre<input id="rnNombre" maxlength="100" /></label>
-      <p id="rnMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Guardar</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="dlgMiPassword">
-    <div class="dlg-head"><h2>Cambiar mi contraseña</h2><button type="button" class="cerrar" data-cerrar>&times;</button></div>
-    <form class="dlg-body" id="miPasswordForm" novalidate>
-      <label class="campo">Contraseña actual<input id="mpActual" type="password" autocomplete="current-password" /></label>
-      <label class="campo">Nueva contraseña (mín. 6)<input id="mpNueva" type="password" autocomplete="new-password" /></label>
-      <label class="campo">Repite la nueva contraseña<input id="mpNueva2" type="password" autocomplete="new-password" /></label>
-      <p id="mpMsg"></p>
-      <div class="dlg-acciones"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit">Cambiar</button></div>
-    </form>
-  </dialog>
-
-  <!--script src="api.js"></script-->
-  <!--script src="app.js"></script-->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

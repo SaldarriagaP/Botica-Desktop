@@ -1,0 +1,103 @@
+/*CABECERA MODAL ESTANDARIZADA*/
+.modal .modal-content,
+.botica-panel-modal .modal-content {
+    border: 0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .3) !important;
+    overflow: hidden !important;
+}
+
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header,
+.botica-panel-modal .modal-header {
+    background: radial-gradient(circle at 82% 15%, rgba(14, 165, 233, .28), transparent 30%), 
+                linear-gradient(135deg, #0f172a, #172554) !important;
+    border: 0 !important;
+    box-sizing: border-box !important;
+    color: #fff !important;
+    display: block !important;
+    min-height: 76px !important;
+    padding: 16px 65px 16px 20px !important;
+    position: relative !important;
+    text-align: left !important;
+    width: 100% !important;
+}
+
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header::before,
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header::after,
+.botica-panel-modal .modal-header::before,
+.botica-panel-modal .modal-header::after {
+    content: none !important;
+    display: none !important;
+}
+
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header > div:not(.mis-ventas-modal-header-actions),
+.botica-panel-modal .modal-heading-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    margin: 0 !important;
+    text-align: left !important;
+    width: auto !important;
+}
+
+.modal .modal-eyebrow,
+.botica-panel-modal .modal-eyebrow {
+    color: #7dd3fc !important;
+    display: block !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    letter-spacing: .08em !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    text-transform: uppercase !important;
+}
+
+.modal .modal-title,
+.botica-panel-modal .modal-title {
+    align-items: center !important;
+    color: #fff !important;
+    display: inline-flex !important;
+    font-size: 19px !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    text-align: left !important;
+}
+
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header button.close,
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header .close,
+.botica-panel-modal .modal-header .close {
+    align-items: center !important;
+    background: rgba(255, 255, 255, .1) !important;
+    border: 1px solid rgba(255, 255, 255, .22) !important;
+    border-radius: 7px !important;
+    color: #fff !important;
+    display: inline-flex !important;
+    float: none !important;
+    font-size: 20px !important;
+    height: 34px !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    right: 18px !important;
+    text-shadow: none !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    transition: all .15s ease-in-out !important;
+    width: 34px !important;
+    z-index: 10 !important;
+}
+
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header .close:hover,
+.modal:not(.mis-ventas-modal):not(.rentables-report-modal):not(.ventas-checkout-modal) .modal-header .close:focus,
+.botica-panel-modal .modal-header .close:hover,
+.botica-panel-modal .modal-header .close:focus {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #fff !important;
+}

@@ -159,7 +159,28 @@ function listarTiposDocumento() {
   return db.prepare('SELECT codigo, descripcion FROM tipo_documento ORDER BY codigo').all();
 }
 
+// Indicadores de la pantalla de clientes (como el reporte del web).
+function estadisticas() {
+  const r = db.prepare(
+    `SELECT COUNT(*) AS total,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS activos,
+            SUM(CASE WHEN type = ${TIPO_EMPRESA} THEN 1 ELSE 0 END) AS empresas,
+            SUM(CASE WHEN type = ${TIPO_PERSONA} THEN 1 ELSE 0 END) AS personas,
+            SUM(CASE WHEN sync_pendiente = 1 THEN 1 ELSE 0 END) AS porSincronizar
+     FROM customers`
+  ).get();
+  return {
+    total: r.total, activos: r.activos || 0, empresas: r.empresas || 0,
+    personas: r.personas || 0, porSincronizar: r.porSincronizar || 0,
+  };
+}
+
+// Valida los datos de un cliente sin guardarlo (alta rapida desde el punto de venta).
+function validarDatos(datos) {
+  return validar(normalizar(datos || {}));
+}
+
 module.exports = {
   listar, obtener, buscarPorDocumento, crear, actualizar, cambiarEstado, listarTiposDocumento,
-  rucValido, validarDocumento, tipoCliente,
+  rucValido, validarDocumento, validarDatos, tipoCliente, estadisticas,
 };

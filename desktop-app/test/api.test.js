@@ -129,3 +129,11 @@ test('rutas /api desconocidas responden 404 JSON', async () => {
   assert.equal(r.status, 404);
   assert.equal(r.json.ok, false);
 });
+
+test('las respuestas llevan cabeceras de seguridad (CSP sin scripts inline)', async () => {
+  const r = await fetch(`${srv.base}/login.html`);
+  const csp = r.headers.get('content-security-policy');
+  assert.match(csp, /script-src 'self'/);
+  assert.doesNotMatch(csp, /unsafe-eval/);
+  assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
+});

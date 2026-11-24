@@ -23,6 +23,18 @@ function createApp() {
   const routes = require('./routes');
   const app = express();
   app.disable('x-powered-by');
+  // Cabeceras de seguridad: solo se ejecuta codigo propio de la app (sin
+  // scripts inline ni eval), sin marcos externos ni deteccion de tipo MIME.
+  app.use((req, res, next) => {
+    res.set({
+      'Content-Security-Policy':
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; " +
+        "connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+    });
+    next();
+  });
   app.use(express.json({ limit: '1mb' }));
   app.use(express.static(path.join(__dirname, '..', 'public')));
   app.use('/api', routes);

@@ -1,7 +1,7 @@
 {
   "name": "botica-desktop-app",
   "productName": "Desktop Botica",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "App de escritorio offline-first para una sucursal de Boticas Solidaria (Electron + Node + SQLite).",
   "main": "electron-main.js",
   "scripts": {
@@ -73,6 +73,7 @@
         "repo": "Botica-Desktop",
         "releaseType": "release"
       }
-    ]
+    ],
+    "artifactName": "Desktop-Botica-Setup-${version}.${ext}"
   }
 }

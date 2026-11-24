@@ -170,7 +170,7 @@ test.describe('ajustes de stock y kardex', () => {
 });
 
 test.describe('ventas usan el stock del catalogo', () => {
-  test.before(() => caja.abrir('Luis Vendedor', 0));
+  test.before(() => caja.abrir({ id: 2, nombre: 'Luis Vendedor' }, 0));
 
   test('vender 1 caja y 5 sueltas descuenta 105 fracciones y registra kardex', () => {
     const antes = catalogo.obtener(101).stock; // Paracetamol x 100

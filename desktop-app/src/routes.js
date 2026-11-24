@@ -8,6 +8,8 @@ const clientes = require('./clientes');
 const catalogo = require('./catalogo');
 const ventas = require('./ventas');
 const sync = require('./sync');
+const resumen = require('./resumen');
+const permisos = require('./permisos');
 const { requireAuth, requirePermiso } = require('./middleware');
 
 const router = express.Router();
@@ -56,6 +58,7 @@ router.get('/clientes', requirePermiso('clientes.ver'), (req, res) =>
   res.json(clientes.listar({ q: req.query.q, soloActivos: req.query.soloActivos === '1', pagina: req.query.pagina, porPagina: req.query.porPagina }))
 );
 router.get('/clientes/tipos-documento', requirePermiso('clientes.ver'), (req, res) => res.json(clientes.listarTiposDocumento()));
+router.get('/clientes/estadisticas', requirePermiso('clientes.ver'), (req, res) => res.json(clientes.estadisticas()));
 router.get('/clientes/documento/:code', requirePermiso('clientes.ver'), (req, res) => {
   const cliente = clientes.buscarPorDocumento(req.params.code);
   res.status(cliente ? 200 : 404).json(cliente ? { ok: true, cliente } : { ok: false, error: 'No hay un cliente con ese documento' });
@@ -85,6 +88,7 @@ router.get('/productos', verCatalogo, (req, res) =>
     porPagina: req.query.porPagina,
   }))
 );
+router.get('/productos/estadisticas', verCatalogo, (req, res) => res.json(catalogo.estadisticas()));
 router.get('/productos/:id', verCatalogo, (req, res) => {
   const producto = catalogo.obtener(req.params.id);
   res.status(producto ? 200 : 404).json(producto ? { ok: true, producto } : { ok: false, error: 'Producto no encontrado' });
@@ -110,18 +114,54 @@ for (const [ruta, maestro] of [['categorias', catalogo.categorias], ['marcas', c
   router.put(`/${ruta}/:id`, gestionarCatalogo, (req, res) => res.json(maestro.renombrar(req.params.id, body(req).name)));
 }
 
-// ===== Caja y ventas (fuera del foco de esta entrega, se mantienen operativos) =====
+// ===== Caja =====
+// El estado del turno es informativo para cualquier usuario con sesion (la
+// interfaz decide a donde enviar al vendedor); operar exige permiso.
+const operarCaja = requirePermiso('caja.operar');
 router.get('/caja/estado', (req, res) => res.json(caja.estado()));
-router.post('/caja/abrir', (req, res) => res.json(caja.abrir(req.user.nombre, body(req).monto)));
-router.post('/caja/cerrar', (req, res) => res.json(caja.cerrar(body(req).monto)));
-router.get('/ventas', (req, res) => res.json(ventas.listar()));
-router.post('/ventas', (req, res) =>
-  res.json(ventas.registrar({ ...body(req), usuario: req.user.nombre, userId: req.user.id }))
+router.post('/caja/abrir', operarCaja, (req, res) => res.json(caja.abrir(req.user, body(req).monto)));
+router.post('/caja/cerrar', operarCaja, (req, res) =>
+  res.json(caja.cerrar(body(req).monto, { tarjeta: body(req).tarjeta, observacion: body(req).observacion, actor: req.user }))
 );
+router.get('/caja/historial', requirePermiso('ventas.ver'), (req, res) => res.json(caja.historial({ limite: req.query.limite })));
+router.get('/caja/:id', requirePermiso('ventas.ver'), (req, res) => {
+  const turno = caja.obtener(req.params.id);
+  res.status(turno ? 200 : 404).json(turno ? { ok: true, caja: turno } : { ok: false, error: 'Caja no encontrada' });
+});
+
+// ===== Ventas =====
+// Usuario y precios salen de la sesion y de la BD; se ignora lo que mande el cliente.
+// ?mias=1 -> solo las del usuario en sesion ("Mis ventas" del web).
+router.get('/ventas', requirePermiso('ventas.ver'), (req, res) =>
+  res.json(ventas.listar({
+    cajaId: req.query.caja,
+    userId: req.query.mias === '1' ? req.user.id : undefined,
+    horas: req.query.horas,
+    limite: req.query.limite,
+  }))
+);
+router.get('/ventas/:id', requirePermiso('ventas.ver'), (req, res) => {
+  const venta = ventas.obtener(req.params.id);
+  res.status(venta ? 200 : 404).json(venta ? { ok: true, venta } : { ok: false, error: 'Venta no encontrada' });
+});
+router.post('/ventas', requirePermiso('ventas.registrar'), (req, res) => {
+  const { items, clienteId, cliente, tipoComprobante, medioPago, montoRecibido, montoEfectivo, referencia } = body(req);
+  res.json(ventas.registrar({
+    items, clienteId, cliente, tipoComprobante, medioPago, montoRecibido, montoEfectivo, referencia,
+    puedeCrearCliente: permisos.tiene(req.user.type, 'clientes.crear'),
+    usuario: req.user.nombre,
+    userId: req.user.id,
+  }));
+});
+
+// ===== Inicio (resumen segun permisos del rol) =====
+router.get('/resumen', (req, res) => res.json(resumen.obtener(req.user)));
 
 // ===== Sincronizacion =====
-router.post('/sync', async (req, res) => res.json(await sync.sincronizar()));
-router.get('/sync/estado', (req, res) => res.json({ lastSyncAt: sync.lastSyncAt() }));
+router.post('/sync', requirePermiso('sync.ejecutar'), async (req, res, next) => {
+  try { res.json(await sync.sincronizar()); } catch (err) { next(err); }
+});
+router.get('/sync/estado', (req, res) => res.json(sync.estado()));
 
 router.use((req, res) => res.status(404).json({ ok: false, error: 'Ruta no encontrada' }));
 

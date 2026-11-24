@@ -384,6 +384,90 @@ const migraciones = [
       CREATE INDEX idx_products_codigo_barras ON products(codigo_barras) WHERE codigo_barras <> '';
     `);
   },
+
+  // v5 - Caja y ventas completas.
+  //  - caja: responsable por id, sucursal, cuadre al cierre (esperado vs
+  //    contado) y observacion.
+  //  - sales: comprobante (boleta/factura con serie-correlativo propio de la
+  //    sucursal), medio de pago, desglose de IGV, turno de caja y estado de
+  //    sincronizacion (intentos y ultimo error) para no perder ventas.
+  //  - series: correlativos por serie. La serie sale de locals.serie
+  //    (S19 -> B019 / F019), como en el sistema web.
+  function v5_cajaVentas(db, { localId }) {
+    ensureColumn(db, 'caja', 'user_id', 'INTEGER REFERENCES users(id)');
+    ensureColumn(db, 'caja', 'local_id', 'INTEGER REFERENCES locals(id)');
+    ensureColumn(db, 'caja', 'monto_esperado', 'REAL');
+    ensureColumn(db, 'caja', 'diferencia', 'REAL');
+    ensureColumn(db, 'caja', 'observacion', "TEXT NOT NULL DEFAULT ''");
+    ensureColumn(db, 'caja', 'closed_by', 'INTEGER REFERENCES users(id)');
+
+    ensureColumn(db, 'sales', 'caja_id', 'INTEGER REFERENCES caja(id)');
+    ensureColumn(db, 'sales', 'user_id', 'INTEGER REFERENCES users(id)');
+    ensureColumn(db, 'sales', 'local_id', 'INTEGER REFERENCES locals(id)');
+    ensureColumn(db, 'sales', 'tipo_comprobante', "TEXT NOT NULL DEFAULT 'boleta'");
+    ensureColumn(db, 'sales', 'serie', 'TEXT');
+    ensureColumn(db, 'sales', 'correlativo', 'INTEGER');
+    ensureColumn(db, 'sales', 'cliente_doc', "TEXT NOT NULL DEFAULT ''");
+    ensureColumn(db, 'sales', 'cliente_nombre', "TEXT NOT NULL DEFAULT ''");
+    ensureColumn(db, 'sales', 'medio_pago', "TEXT NOT NULL DEFAULT 'efectivo'");
+    ensureColumn(db, 'sales', 'op_gravada', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'op_exonerada', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'igv', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'monto_recibido', 'REAL');
+    ensureColumn(db, 'sales', 'vuelto', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'sync_intentos', 'INTEGER NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'sync_error', 'TEXT');
+
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS series (
+        serie TEXT PRIMARY KEY,
+        tipo TEXT NOT NULL CHECK (tipo IN ('boleta', 'factura')),
+        ultimo INTEGER NOT NULL DEFAULT 0 CHECK (ultimo >= 0)
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_sales_comprobante ON sales(serie, correlativo) WHERE serie IS NOT NULL;
+      CREATE INDEX IF NOT EXISTS idx_sales_caja ON sales(caja_id);
+      CREATE INDEX IF NOT EXISTS idx_sales_sync ON sales(sincronizado);
+    `);
+
+    // Turnos y ventas anteriores quedan asociados a la sucursal configurada.
+    const local = db.prepare('SELECT id FROM locals WHERE id = ?').get(localId);
+    if (local) {
+      db.prepare('UPDATE caja SET local_id = ? WHERE local_id IS NULL').run(localId);
+      db.prepare('UPDATE sales SET local_id = ? WHERE local_id IS NULL').run(localId);
+    }
+  },
+
+  // v6: paridad con el punto de venta web: ticket, tarjeta con referencia,
+  // multipago (efectivo + tarjeta), direccion del cliente en factura y
+  // cierre de caja declarando efectivo y tarjeta por separado.
+  function v6_paridadWeb(db) {
+    ensureColumn(db, 'sales', 'pago_efectivo', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'pago_tarjeta', 'REAL NOT NULL DEFAULT 0');
+    ensureColumn(db, 'sales', 'referencia_pago', "TEXT NOT NULL DEFAULT ''");
+    ensureColumn(db, 'sales', 'cliente_direccion', "TEXT NOT NULL DEFAULT ''");
+    ensureColumn(db, 'caja', 'tarjeta_declarada', 'REAL');
+    ensureColumn(db, 'caja', 'tarjeta_esperada', 'REAL');
+
+    // Ventas previas: todo lo cobrado va al medio registrado.
+    db.exec(`
+      UPDATE sales SET pago_efectivo = total WHERE medio_pago = 'efectivo' AND pago_efectivo = 0 AND pago_tarjeta = 0;
+      UPDATE sales SET pago_tarjeta = total WHERE medio_pago <> 'efectivo' AND pago_efectivo = 0 AND pago_tarjeta = 0;
+    `);
+
+    // La tabla de series admite ahora tickets (SQLite no permite cambiar un CHECK).
+    db.exec(`
+      CREATE TABLE series_v6 (
+        serie TEXT PRIMARY KEY,
+        tipo TEXT NOT NULL CHECK (tipo IN ('boleta', 'factura', 'ticket')),
+        ultimo INTEGER NOT NULL DEFAULT 0 CHECK (ultimo >= 0)
+      );
+      INSERT INTO series_v6 (serie, tipo, ultimo) SELECT serie, tipo, ultimo FROM series;
+      DROP TABLE series;
+      ALTER TABLE series_v6 RENAME TO series;
+      CREATE INDEX IF NOT EXISTS idx_sales_fecha ON sales(fecha);
+      CREATE INDEX IF NOT EXISTS idx_sales_user ON sales(user_id, fecha);
+    `);
+  },
 ];
 
 function versionActual(db) {

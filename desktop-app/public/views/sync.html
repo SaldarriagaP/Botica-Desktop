@@ -1,6 +1,36 @@
-<div class="card">
-  <div class="card-head"><h2>Sincronización</h2></div>
-  <p>Última sincronización: <strong id="lastSync">-</strong></p>
-  <button id="btnSincronizar">Sincronizar ahora</button>
-  <p id="syncMsg"></p>
-</div>
+<section class="wrapper product-list-page">
+  <ul class="breadcrumb"><li><i class="fa fa-home"></i> Sistema</li><li class="active">Sincronización</li></ul>
+  <section class="dashboard-hero producto-hero">
+    <div class="producto-hero-row">
+      <h1>Sincronización con el sistema central</h1>
+      <div class="dashboard-actions">
+        <button type="button" class="dashboard-action dashboard-action-button product-btn-new" id="btnSincronizar" data-permiso="sync.ejecutar"><i class="fa fa-refresh"></i><strong>Sincronizar ahora</strong></button>
+      </div>
+    </div>
+  </section>
+  <div class="activo-kpis" id="syncKpis"></div>
+  <div class="row">
+    <div class="col-lg-7">
+      <section class="panel dashboard-panel">
+        <div class="panel-heading"><span><i class="fa fa-heartbeat"></i> Estado</span></div>
+        <div class="panel-body">
+          <div class="sync-estado-grande" id="syncEstado"></div>
+          <div id="syncMsg" style="margin-top:14px"></div>
+        </div>
+      </section>
+    </div>
+    <div class="col-lg-5">
+      <section class="panel dashboard-panel">
+        <div class="panel-heading"><span><i class="fa fa-info-circle"></i> ¿Cómo funciona?</span></div>
+        <div class="panel-body">
+          <ol class="sync-pasos">
+            <li>Si se va el internet o la luz, sigue vendiendo aquí: cada venta queda guardada en esta computadora con su comprobante.</li>
+            <li>La terminal intenta conectarse con el central automáticamente cada minuto.</li>
+            <li>Cuando vuelve la conexión, las ventas pendientes se suben solas y se actualizan los precios.</li>
+            <li>También puedes forzarlo con <strong>Sincronizar ahora</strong>.</li>
+          </ol>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

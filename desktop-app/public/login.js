@@ -26,23 +26,29 @@ const eyeIcon = document.getElementById('eyeIcon');
 togglePassword.addEventListener('click', () => {
   const mostrar = passwordInput.type === 'password';
   passwordInput.type = mostrar ? 'text' : 'password';
-  togglePassword.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  togglePassword.setAttribute('aria-label', mostrar ? 'Ocultar clave' : 'Mostrar clave');
   togglePassword.setAttribute('aria-pressed', mostrar ? 'true' : 'false');
-  eyeIcon.innerHTML = mostrar
-    ? '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/><path d="M4 4l16 16"/>'
-    : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/>';
+  eyeIcon.className = mostrar ? 'fa fa-eye-slash' : 'fa fa-eye';
 });
+
+// Mientras valida, el boton muestra la rueda girando (como el web).
+function cargando(si) {
+  btn.disabled = si;
+  btn.classList.toggle('cargando', si);
+  document.getElementById('btnLoginTexto').textContent = si ? 'Ingresando...' : 'Ingresar';
+  document.getElementById('btnLoginIcono').className = si ? 'fa fa-spinner fa-spin' : 'fa fa-arrow-right';
+}
 
 async function login() {
   const username = document.getElementById('username').value.trim();
   const password = passwordInput.value;
   ocultarAviso();
-  btn.disabled = true;
+  cargando(true);
 
   const data = await api('/api/auth/login', { method: 'POST', body: { username, password } });
 
   if (!data.ok) {
-    btn.disabled = false;
+    cargando(false);
     mostrarAviso(data.error || 'No se pudo iniciar sesión');
     passwordInput.value = '';
     passwordInput.focus();

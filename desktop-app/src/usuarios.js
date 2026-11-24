@@ -15,6 +15,7 @@ function listar() {
     ...auth.perfilPublico(u),
     status: u.status,
     phone: u.phone,
+    created_at: u.created_at,
     bloqueado: !!(u.locked_until && u.locked_until > ahora()),
   }));
 }

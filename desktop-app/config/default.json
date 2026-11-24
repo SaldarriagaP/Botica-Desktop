@@ -5,6 +5,9 @@
     "port": 4500
   },
   "centralUrl": "http://localhost:4000",
+  "sync": {
+    "automaticoSegundos": 60
+  },
   "session": {
     "idleMinutes": 480
   },

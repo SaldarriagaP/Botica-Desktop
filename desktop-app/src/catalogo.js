@@ -57,7 +57,8 @@ function maestro(tabla, etiqueta) {
   return {
     listar() {
       return db.prepare(
-        `SELECT t.id, t.name, (SELECT COUNT(*) FROM products p WHERE p.${etiqueta.campo} = t.id) AS productos
+        `SELECT t.id, t.name, t.created_at, t.updated_at,
+                (SELECT COUNT(*) FROM products p WHERE p.${etiqueta.campo} = t.id) AS productos
          FROM ${tabla} t ORDER BY t.name`
       ).all();
     },
@@ -81,6 +82,26 @@ function maestro(tabla, etiqueta) {
       if (info.changes === 0) return { ok: false, error: `${etiqueta.singular[0].toUpperCase()}${etiqueta.singular.slice(1)} no encontrada` };
       return { ok: true };
     },
+  };
+}
+
+// Indicadores del listado de productos (tarjetas superiores, como en el web).
+function estadisticas() {
+  const r = db.prepare(
+    `SELECT COUNT(*) AS total,
+            SUM(CASE WHEN p.status = 1 THEN 1 ELSE 0 END) AS activos,
+            SUM(CASE WHEN p.precio_unidad > 0 THEN 1 ELSE 0 END) AS conPrecio,
+            SUM(CASE WHEN p.status = 1 AND COALESCE(s.stock, 0) <= 0 THEN 1 ELSE 0 END) AS sinStock,
+            SUM(CASE WHEN p.status = 1 AND COALESCE(s.stock_minimo, 0) > 0 AND COALESCE(s.stock, 0) <= s.stock_minimo THEN 1 ELSE 0 END) AS stockBajo
+     FROM products p LEFT JOIN product_stock s ON s.product_id = p.id AND s.local_id = ?`
+  ).get(config.localId);
+  return {
+    total: r.total,
+    activos: r.activos || 0,
+    inactivos: r.total - (r.activos || 0),
+    conPrecio: r.conPrecio || 0,
+    sinStock: r.sinStock || 0,
+    stockBajo: r.stockBajo || 0,
   };
 }
 
@@ -325,5 +346,5 @@ function kardex(id, { pagina = 1, porPagina = 25 } = {}) {
 
 module.exports = {
   listar, obtener, crear, actualizar, cambiarEstado, ajustarStock, definirStockMinimo, kardex,
-  moverStock, describirStock, categorias, marcas,
+  moverStock, describirStock, categorias, marcas, estadisticas,
 };

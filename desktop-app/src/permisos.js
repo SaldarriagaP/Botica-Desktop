@@ -16,6 +16,11 @@ const PERMISOS = {
   'catalogo.gestionar': [1, 5], // productos, marcas y categorias
   'catalogo.stock': [1, 5], // ajustes de stock y stock minimo
   'catalogo.kardex': [1, 3, 4, 5],
+
+  'caja.operar': [1, 2, 4], // abrir y cerrar turno
+  'ventas.registrar': [1, 2, 4],
+  'ventas.ver': [1, 2, 3, 4], // el auditor revisa ventas y turnos
+  'sync.ejecutar': [1, 2, 4, 5],
 };
 
 function tiene(tipo, permiso) {

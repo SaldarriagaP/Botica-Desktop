@@ -1,0 +1,47 @@
+<section class="wrapper product-list-page">
+  <ul class="breadcrumb"><li><i class="fa fa-home"></i> Ventas</li><li class="active">Historial de ventas</li></ul>
+  <section class="dashboard-hero producto-hero">
+    <div class="producto-hero-row">
+      <h1>Historial de ventas</h1>
+      <div class="dashboard-actions">
+        <button type="button" class="dashboard-action dashboard-action-button product-btn-new" data-ir="ventas" data-permiso="ventas.registrar"><i class="fa fa-plus-circle"></i><strong>Nueva venta</strong></button>
+      </div>
+    </div>
+  </section>
+  <div class="activo-kpis" id="histKpis"></div>
+  <section class="panel product-list-panel">
+    <header class="panel-heading product-panel-heading"><span><i class="fa fa-list-alt"></i> Ventas registradas</span></header>
+    <div class="panel-body">
+      <div class="botica-dt-toolbar">
+        <div class="dataTables_length"><label>Periodo
+          <select id="histHoras" class="form-control input-sm">
+            <option value="24">Últimas 24 horas</option><option value="168">Últimos 7 días</option><option value="720" selected>Últimos 30 días</option><option value="">Todas</option>
+          </select></label>
+          <label><input type="checkbox" id="histPendientes" /> Solo por sincronizar</label>
+        </div>
+        <div class="dataTables_filter"><label>Buscar: <input type="search" id="histBuscar" class="form-control input-sm" placeholder="Comprobante, cliente o cajero" /></label></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped table-advance table-hover category-table" id="histTabla">
+          <thead><tr><th>Comprobante</th><th>Fecha</th><th>Cliente</th><th>Cajero</th><th>Pago</th><th class="text-right">Total</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="tabla-pie" id="histPaginador"></div>
+    </div>
+  </section>
+</section>
+
+<dialog id="dlgVentaDetalle" class="botica-panel-modal dlg-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div><span class="modal-eyebrow">Detalle de venta</span><h4 class="modal-title" id="vdTitulo"></h4></div>
+      <button type="button" class="close" data-cerrar>&times;</button>
+    </div>
+    <div class="modal-body" id="vdCuerpo"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-cerrar>Cerrar</button>
+      <button type="button" class="btn btn-info" id="vdImprimir"><i class="fa fa-print"></i> Reimprimir</button>
+    </div>
+  </div>
+</dialog>
