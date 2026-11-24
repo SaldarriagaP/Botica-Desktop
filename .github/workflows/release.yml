@@ -25,9 +25,9 @@ jobs:
       run:
         working-directory: desktop-app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -48,7 +48,19 @@ jobs:
           base=$(node -p "require('./package.json').version.split('.').slice(0,2).join('.')")
           npm version "$base.${{ github.run_number }}" --no-git-tag-version --allow-same-version
 
-      - name: Compilar y publicar
-        run: npm run release
+      - name: Compilar instalador
+        run: npm run dist
+
+      # gh crea la etiqueta vX.Y.Z y el Release con los archivos que necesita
+      # el actualizador (instalador, .blockmap y latest.yml).
+      - name: Publicar Release
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          gh release create "v$version" \
+            dist/*.exe dist/*.blockmap dist/latest.yml \
+            --target "${{ github.sha }}" \
+            --title "Desktop Botica $version" \
+            --notes "Version automatica generada desde ${{ github.sha }}."
